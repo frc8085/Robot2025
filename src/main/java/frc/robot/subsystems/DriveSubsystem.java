@@ -4,12 +4,9 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.hal.FRCNetComm.tInstances;
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,13 +14,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
     // Create MAXSwerveModules
@@ -50,15 +44,6 @@ public class DriveSubsystem extends SubsystemBase {
     // The gyro sensor
     private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
-    // Slew rate filter variables for controlling lateral acceleration
-    private double m_currentRotation = 0.0;
-    private double m_currentTranslationDir = 0.0;
-    private double m_currentTranslationMag = 0.0;
-
-    private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
-    private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
-    private double m_prevTime = WPIUtilJNI.now() * 1e-6;
-
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
             DriveConstants.kDriveKinematics,
@@ -72,6 +57,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
+        // Usage reporting for MAXSwerve template
+        HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
     }
 
     @Override
@@ -121,64 +108,12 @@ public class DriveSubsystem extends SubsystemBase {
      * @param rot           Angular rate of the robot.
      * @param fieldRelative Whether the provided x and y speeds are relative to the
      *                      field.
-     * @param rateLimit     Whether to enable rate limiting for smoother control.
      */
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-
-        double xSpeedCommanded;
-        double ySpeedCommanded;
-
-        if (rateLimit) {
-            // Convert XY to polar for rate limiting
-            double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
-            double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
-
-            // Calculate the direction slew rate based on an estimate of the lateral
-            // acceleration
-            double directionSlewRate;
-            if (m_currentTranslationMag != 0.0) {
-                directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
-            } else {
-                directionSlewRate = 500.0; // some high number that means the slew rate is effectively instantaneous
-            }
-
-            double currentTime = WPIUtilJNI.now() * 1e-6;
-            double elapsedTime = currentTime - m_prevTime;
-            double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);
-            if (angleDif < 0.45 * Math.PI) {
-                m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir,
-                        directionSlewRate * elapsedTime);
-                m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-            } else if (angleDif > 0.85 * Math.PI) {
-                if (m_currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality
-                                                      // checking
-                                                      // keep currentTranslationDir unchanged
-                    m_currentTranslationMag = m_magLimiter.calculate(0.0);
-                } else {
-                    m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
-                    m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-                }
-            } else {
-                m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir,
-                        directionSlewRate * elapsedTime);
-                m_currentTranslationMag = m_magLimiter.calculate(0.0);
-            }
-            m_prevTime = currentTime;
-
-            xSpeedCommanded = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
-            ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
-            m_currentRotation = m_rotLimiter.calculate(rot);
-
-        } else {
-            xSpeedCommanded = xSpeed;
-            ySpeedCommanded = ySpeed;
-            m_currentRotation = rot;
-        }
-
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         // Convert the commanded speeds into the correct units for the drivetrain
-        double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-        double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-        double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
+        double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+        double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+        double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
                 fieldRelative
@@ -204,7 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the swerve ModuleStates
+     * Sets the swerve ModuleStates.
      *
      * @param desiredStates The desired SwerveModule states.
      */
@@ -247,58 +182,4 @@ public class DriveSubsystem extends SubsystemBase {
     public double getTurnRate() {
         return m_gyro.getRate(IMUAxis.kZ) * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
     }
-
-    public class SwerveDriveWheel {
-        private final PIDController directionController;
-        private final CANSparkMax directionMotor;
-        private final RelativeEncoder directionEncoder;
-
-        // Constructor to initialize the PID controller and the motor/encoder
-        public SwerveDriveWheel(double P, double I, double D, CANSparkMax directionMotor,
-                RelativeEncoder directionEncoder) {
-            // Initialize the motor and encoder
-            this.directionMotor = directionMotor;
-            this.directionEncoder = directionEncoder;
-
-            // Create the PID controller with the provided constants
-            this.directionController = new PIDController(P, I, D);
-
-            // Set the PID controller to use the encoder as a feedback source
-            this.directionController.setSetpoint(0.0); // default setpoint (zero position)
-            this.directionController.setTolerance(5.0); // Tolerance in degrees, adjust as needed
-        }
-
-        // Method to set the desired direction of the wheel
-        public void setDirection(double setpoint) {
-            // Set the setpoint for the PID controller
-            directionController.setSetpoint(setpoint);
-
-            // Get the current position from the encoder (in degrees or encoder ticks)
-            double currentPosition = directionEncoder.getPosition(); // or getAngle() depending on your setup
-
-            // Calculate the PID output to adjust the motor
-            double pidOutput = directionController.calculate(currentPosition);
-
-            // Set the motor speed based on the PID output
-            directionMotor.set(pidOutput); // Motor will be controlled by the PID output
-        }
-
-        // You can add more methods like resetting the encoder, getting the position,
-        // etc., as needed
-        public void resetEncoder() {
-            directionEncoder.setPosition(0); // Reset the encoder position
-        }
-
-        public double getCurrentPosition() {
-            return directionEncoder.getPosition(); // Return the current position
-        }
-    }
-
-    public Command exampleMethodCommand() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'exampleMethodCommand'");
-    }
 }
-
-// TODO: apply controller settings
-// TODO:
