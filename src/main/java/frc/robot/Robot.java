@@ -1,124 +1,139 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
- * project.
- */
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+
 public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
+  private SparkMax motor;
+  private SparkMaxConfig motorConfig;
+  private SparkClosedLoopController closedLoopController;
+  private RelativeEncoder encoder;
 
-    private RobotContainer m_robotContainer;
-
-    /**
-     * This function is run when the robot is first started up and should be used
-     * for any
-     * initialization code.
+  public Robot() {
+    /*
+     * Initialize the SPARK MAX and get its encoder and closed loop controller
+     * objects for later use.
      */
-    @Override
-    public void robotInit() {
-        // Instantiate our RobotContainer. This will perform all our button bindings,
-        // and put our
-        // autonomous chooser on the dashboard.
-        m_robotContainer = new RobotContainer();
-    }
+    motor = new SparkMax(1, MotorType.kBrushless);
+    closedLoopController = motor.getClosedLoopController();
+    encoder = motor.getEncoder();
 
-    /**
-     * This function is called every 20 ms, no matter the mode. Use this for items
-     * like diagnostics
-     * that you want ran during disabled, autonomous, teleoperated and test.
+    /*
+     * Create a new SPARK MAX configuration object. This will store the
+     * configuration parameters for the SPARK MAX that we will set below.
+     */
+    motorConfig = new SparkMaxConfig();
+
+    /*
+     * Configure the encoder. For this specific example, we are using the
+     * integrated encoder of the NEO, and we don't need to configure it. If
+     * needed, we can adjust values like the position or velocity conversion
+     * factors.
+     */
+    motorConfig.encoder
+        .positionConversionFactor(1)
+        .velocityConversionFactor(1);
+
+    /*
+     * Configure the closed loop controller. We want to make sure we set the
+     * feedback sensor as the primary encoder.
+     */
+    motorConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        // Set PID values for position control. We don't need to pass a closed
+        // loop slot, as it will default to slot 0.
+        .p(0.4)
+        .i(0)
+        .d(0)
+        .outputRange(-1, 1)
+        // Set PID values for velocity control in slot 1
+        .p(0.0001, ClosedLoopSlot.kSlot1)
+        .i(0, ClosedLoopSlot.kSlot1)
+        .d(0, ClosedLoopSlot.kSlot1)
+        .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+
+    motorConfig.closedLoop.maxMotion
+        // Set MAXMotion parameters for position control. We don't need to pass
+        // a closed loop slot, as it will default to slot 0.
+        .maxVelocity(1000)
+        .maxAcceleration(1000)
+        .allowedClosedLoopError(1)
+        // Set MAXMotion parameters for velocity control in slot 1
+        .maxAcceleration(500, ClosedLoopSlot.kSlot1)
+        .maxVelocity(6000, ClosedLoopSlot.kSlot1)
+        .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
+
+    /*
+     * Apply the configuration to the SPARK MAX.
      *
-     * <p>
-     * This runs after the mode specific periodic functions, but before LiveWindow
-     * and
-     * SmartDashboard integrated updating.
+     * kResetSafeParameters is used to get the SPARK MAX to a known state. This
+     * is useful in case the SPARK MAX is replaced.
+     *
+     * kPersistParameters is used to ensure the configuration is not lost when
+     * the SPARK MAX loses power. This is useful for power cycles that may occur
+     * mid-operation.
      */
-    @Override
-    public void robotPeriodic() {
-        // Runs the Scheduler. This is responsible for polling buttons, adding
-        // newly-scheduled
-        // commands, running already-scheduled commands, removing finished or
-        // interrupted commands,
-        // and running subsystem periodic() methods. This must be called from the
-        // robot's periodic
-        // block in order for anything in the Command-based framework to work.
-        CommandScheduler.getInstance().run();
+    motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+    // Initialize dashboard values
+    SmartDashboard.setDefaultNumber("Target Position", 0);
+    SmartDashboard.setDefaultNumber("Target Velocity", 0);
+    SmartDashboard.setDefaultBoolean("Control Mode", false);
+    SmartDashboard.setDefaultBoolean("Reset Encoder", false);
+  }
+
+  @Override
+  public void teleopPeriodic() {
+    if (SmartDashboard.getBoolean("Control Mode", false)) {
+      /*
+       * Get the target velocity from SmartDashboard and set it as the setpoint
+       * for the closed loop controller with MAXMotionVelocityControl as the
+       * control type.
+       */
+      double targetVelocity = SmartDashboard.getNumber("Target Velocity", 0);
+      closedLoopController.setReference(targetVelocity, ControlType.kMAXMotionVelocityControl,
+          ClosedLoopSlot.kSlot1);
+    } else {
+      /*
+       * Get the target position from SmartDashboard and set it as the setpoint
+       * for the closed loop controller with MAXMotionPositionControl as the
+       * control type.
+       */
+      double targetPosition = SmartDashboard.getNumber("Target Position", 0);
+      closedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl,
+          ClosedLoopSlot.kSlot0);
     }
+  }
 
-    /** This function is called once each time the robot enters Disabled mode. */
-    @Override
-    public void disabledInit() {
+  @Override
+  public void robotPeriodic() {
+    // Display encoder position and velocity
+    SmartDashboard.putNumber("Actual Position", encoder.getPosition());
+    SmartDashboard.putNumber("Actual Velocity", encoder.getVelocity());
+
+    if (SmartDashboard.getBoolean("Reset Encoder", false)) {
+      SmartDashboard.putBoolean("Reset Encoder", false);
+      // Reset the encoder position to 0
+      encoder.setPosition(0);
     }
-
-    @Override
-    public void disabledPeriodic() {
-    }
-
-    /**
-     * This autonomous runs the autonomous command selected by your
-     * {@link RobotContainer} class.
-     */
-    // @Override
-    // public void autonomousInit() {
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // // schedule the autonomous command (example)
-    // if (m_autonomousCommand != null) {
-    // m_autonomousCommand.schedule();
-    // }
-    // }
-
-    /** This function is called periodically during autonomous. */
-    @Override
-    public void autonomousPeriodic() {
-    }
-
-    @Override
-    public void teleopInit() {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.cancel();
-        }
-    }
-
-    /** This function is called periodically during operator control. */
-    @Override
-    public void teleopPeriodic() {
-    }
-
-    @Override
-    public void testInit() {
-        // Cancels all running commands at the start of test mode.
-        CommandScheduler.getInstance().cancelAll();
-    }
-
-    /** This function is called periodically during test mode. */
-    @Override
-    public void testPeriodic() {
-    }
-
-    /** This function is called once when the robot is first started up. */
-    @Override
-    public void simulationInit() {
-    }
-
-    /** This function is called periodically whilst in simulation. */
-    @Override
-    public void simulationPeriodic() {
-    }
+  }
 }
