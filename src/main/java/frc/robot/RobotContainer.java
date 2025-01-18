@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -14,16 +16,17 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -36,7 +39,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -69,10 +72,22 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+    // final Trigger shoot = m_driverController.leftTrigger();
+    // final Trigger shootInstant = m_driverController.rightBumper();
+    final Trigger lockWheels = m_driverController.povDown();
+    lockWheels.toggleOnTrue(new RunCommand(() -> m_robotDrive.setX(),
+                                m_robotDrive));
+
+    // final Trigger autoTarget = m_driverController.leftBumper();
+
+    // final Trigger moveToBackSubwooferDriver = m_driverController.x();
+    // final Trigger moveToSubwooferDriver = m_driverController.y();
+
+    // final Trigger moveToTrapApproachDriver = m_driverController.povLeft();
+    // final Trigger oscillate = m_driverController.povUp();
+
+    final Trigger zeroHeadingButton = m_driverController.start();
+    zeroHeadingButton.onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
   }
 
   /**
