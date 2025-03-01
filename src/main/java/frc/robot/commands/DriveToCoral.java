@@ -2,40 +2,32 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 
 public class DriveToCoral extends Command {
-    private final DriveSubsystem drive;
-    private final LimelightSubsystem limelight;
+    DriveSubsystem drive;
+    LimelightSubsystem limelight;
+    PIDController xPid;
+    double maxSpeed = 0.5;
 
-    private final PIDController xPid;
-    private final PIDController yPid;
-    private final PIDController thetaPid;
+    double[] rhat = { 0, 0 }; // Unit vector in the correct direction.
 
-    private final double maxSpeed = 0.5;
-    private final double maxRotationSpeed = 0.4;
-
-    private final double kP_X = 0.1, kI_X = 0, kD_X = 0;
-    private final double kP_Y = 0.07, kI_Y = 0, kD_Y = 0;
-    private final double kP_Theta = 0.05, kI_Theta = 0, kD_Theta = 0;
-
-    private final double xTarget = 0; // Align center
-    private final double yTarget = 1.5; // Stop 1.5m from tag
-    private final double thetaTarget = 0; // Square up to tag
+    // TO BE TUNED:
+    // double theta = 0; //Angle of the reef.
+    double kP = 0;
+    double kI = 0;
+    double kD = 0;
+    double tolerance = 0.01;
+    double xTarget = -17;
+    double yTarget = 7.46;
 
     public DriveToCoral(DriveSubsystem drive, LimelightSubsystem limelight) {
         this.drive = drive;
         this.limelight = limelight;
 
-        xPid = new PIDController(kP_X, kI_X, kD_X);
-        yPid = new PIDController(kP_Y, kI_Y, kD_Y);
-        thetaPid = new PIDController(kP_Theta, kI_Theta, kD_Theta);
-
-        xPid.setTolerance(0.1);
-        yPid.setTolerance(0.5);
-        thetaPid.setTolerance(2.0); // Degrees
+        xPid = new PIDController(kP, kI, kD);
+        xPid.setTolerance(tolerance);
 
         addRequirements(drive);
     }
@@ -43,40 +35,66 @@ public class DriveToCoral extends Command {
     @Override
     public void initialize() {
         xPid.setSetpoint(xTarget);
-        yPid.setSetpoint(yTarget);
-        thetaPid.setSetpoint(thetaTarget);
+
+        // int tagId = limelight.getID("limelight-left"); //In the future, you can add
+        // some logic to switch b/w left & right
+        // switch(tagId){ //TODO: Finish the rest with the specific unit vectors.
+        // case 6: //Assuming that there is a explicit positive direction that doesn't
+        // change red vs. blue
+        // case 22:
+        // rhat[0] = Math.cos(Math.PI - theta);
+        // rhat[1] = Math.sin(Math.PI - theta);
+        // break;
+        // case 7:
+        // case 21:
+        // rhat[0] = -1;
+        // rhat[1] = 0;
+        // break;
+        // case 8:
+        // case 20:
+        // rhat[0] = Math.cos(theta);
+        // rhat[1] = Math.sin(theta);
+        // break;
+        // case 9:
+        // case 19:
+        // break;
+        // case 10:
+        // case 18:
+        // rhat[0] = 1;
+        // rhat[1] = 0;
+        // break;
+        // case 11:
+        // case 17:
+        // break;
+        // default:
+        // //You're not seeing the right tag.
+        // break;
+        // }
     }
 
     @Override
     public void execute() {
+        double speed = maxSpeed * -xPid.calculate(limelight.getX("limelight-left"));
+
         if (!limelight.hasTarget("limelight-left")) {
-            end(true);
-            return;
+            speed = 0;
         }
 
-        // Retrieve AprilTag pose data
-        double[] botPose = LimelightHelpers.getBotPose("limelight-left");
-
-        double xError = botPose[0]; // Side-to-side alignment
-        double yError = botPose[2]; // Distance to tag (forward movement)
-        double thetaError = botPose[5]; // Rotation error (yaw)
-
-        // Compute PID outputs
-        double xSpeed = maxSpeed * -xPid.calculate(xError);
-        double ySpeed = maxSpeed * -yPid.calculate(yError);
-        double rotationSpeed = maxRotationSpeed * -thetaPid.calculate(thetaError);
-
-        // Drive toward the tag while aligning rotation
-        drive.drive(xSpeed, ySpeed, rotationSpeed, 0, false);
+        drive.drive(speed, 1, 0, 0, false); // If field relative boolean works correctly, above switch case is
+                                            // unnecessary
+        /*
+         * If it doesn't,
+         * Do:
+         * drive.drive(speed, speed*rhat[0], speed*rhat[1], 0, true);
+         */
     }
 
-    @Override
     public void end(boolean interrupted) {
         drive.drive(0, 0, 0, 0, true);
     }
 
-    @Override
     public boolean isFinished() {
-        return xPid.atSetpoint() && yPid.atSetpoint() && thetaPid.atSetpoint();
+        return xPid.atSetpoint();
     }
+
 }
