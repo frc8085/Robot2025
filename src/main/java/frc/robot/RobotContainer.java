@@ -68,6 +68,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.commands.DriveToCoral;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -168,6 +169,7 @@ public class RobotContainer {
                 final Trigger shootAlgaeRight = driverController.rightBumper();
                 final Trigger raiseClimber = driverController.povUp();
                 final Trigger lowerClimber = driverController.povDown();
+                final Trigger autoAlign = driverController.x();
                 // final Trigger intakeMotorsOff = driverController.back();
                 final Trigger altButton = driverController.back();
                 final Trigger deployClimber = driverController.povLeft();
@@ -176,6 +178,7 @@ public class RobotContainer {
                 ejectCoral.onTrue(new EjectCoral(coralSubsystem, elevatorSubsystem, pivotSubsystem));
                 ejectCoral.and(altButton).onTrue(new DropCoral(coralSubsystem, elevatorSubsystem, pivotSubsystem));
                 pickUpCoral.onTrue(new PickUpCoralFromSource(coralSubsystem, elevatorSubsystem, pivotSubsystem, false));
+                autoAlign.onTrue(new DriveToCoral(driveSubsystem, limelight));
                 // pickUpCoral.and(altButton).whileTrue(new RunCommand(() ->
                 // coralSubsystem.pickup(), coralSubsystem))
                 // .onFalse(new SequentialCommandGroup(

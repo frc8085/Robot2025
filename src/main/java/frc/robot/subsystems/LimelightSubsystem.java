@@ -90,6 +90,16 @@ public class LimelightSubsystem extends SubsystemBase {
         return LimelightHelpers.getTY(limelightName);
     }
 
+    public double getDistance(String limelightName) {
+        return LimelightHelpers.getTargetPose3d_RobotSpace(limelightName).getZ();
+    }
+
+    public double getRotation(String limelightName) {
+        double[] botPose = LimelightHelpers.getBotPose(limelightName);
+        return botPose[5]; // Yaw rotation (degrees)
+
+    }
+
     // Account for the robot's current shooter angle when returning the Y value
     public double getYfromRobotPerspective() {
         // double currentShooterPivotPosition = m_arm.getShooterPivotPosition();
