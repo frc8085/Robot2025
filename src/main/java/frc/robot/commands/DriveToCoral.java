@@ -20,8 +20,6 @@ public class DriveToCoral extends Command {
     private final double rotTarget = 0; // Align rotation to face the AprilTag
     private final double targetArea = 10; // Desired AprilTag size in view
 
-    public boolean hasTarget = true;
-
     public DriveToCoral(DriveSubsystem drive, LimelightSubsystem limelight) {
         this.drive = drive;
         this.limelight = limelight;
@@ -44,7 +42,7 @@ public class DriveToCoral extends Command {
     @Override
     public void execute() {
         if (!limelight.hasTarget("limelight-left")) {
-            hasTarget = false;
+            end(true);
             return;
         }
 
@@ -65,11 +63,6 @@ public class DriveToCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        // probably a better way to do this
-        if (hasTarget) {
-            return xPid.atSetpoint() && yPid.atSetpoint() && thetaPid.atSetpoint();
-        } else {
-            return true;
-        }
+        return xPid.atSetpoint() && limelight.getArea("limelight-left") >= targetArea;
     }
 }
