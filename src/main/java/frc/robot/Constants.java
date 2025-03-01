@@ -248,7 +248,7 @@ public final class Constants {
       AlgaePickUpReef2(ElevatorConstants.kElevatorReef2Height, Rotation2d.fromDegrees(102)),
       AlgaePickUpReef3(ElevatorConstants.kElevatorReef3Height, Rotation2d.fromDegrees(102)),
       AlgaePickUpFloorFlip(ElevatorConstants.kElevatorAlgaePickUpFloorFlipHeight, Rotation2d.fromDegrees(90)),
-      AlgaePickUpReef2Flip(ElevatorConstants.kElevatorReef2IntakeHeight, Rotation2d.fromDegrees(-25)),
+      AlgaePickUpReef2Flip(ElevatorConstants.kElevatorReef2IntakeHeight, Rotation2d.fromDegrees(-35)),
       AlgaePickUpReef3Flip(ElevatorConstants.kElevatorReef3IntakeHeight, Rotation2d.fromDegrees(-25)),
       AlgaeNetLeft(ElevatorConstants.kElevatorNetHeight, Rotation2d.fromDegrees(PivotArmConstants.kAlgaeNetLeftPivot)),
       AlgaeNetRight(ElevatorConstants.kElevatorNetHeight,
