@@ -22,7 +22,7 @@ public class AutoScoreCoralL4 extends SequentialCommandGroup {
                                 new RunCommand(() -> driveSubsystem.lock()),
                                 new ToCoralDropOff4(elevatorSubsystem, pivotSubsystem, yellow),
                                 new WaitUntilCommand(elevatorSubsystem::elevatorAtCoralDropOff4Height),
-                                new WaitUntilCommand(() -> pivotSubsystem.pivotAtCoral4DropOffAngle(yellow)),
+                                new WaitUntilCommand(pivotSubsystem::pivotAtCoral4DropOffAngle),
                                 new WaitCommand(.5),
                                 new PrintCommand("Coral Eject Started"),
                                 new RunCommand(() -> coralSubsystem.eject(), coralSubsystem).withTimeout(0.5),

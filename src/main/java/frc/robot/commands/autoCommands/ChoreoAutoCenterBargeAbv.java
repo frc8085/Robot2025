@@ -7,8 +7,8 @@ import frc.robot.Constants;
 import frc.robot.commands.drivetrain.SwerveDriveChoreoFollow;
 import frc.robot.commands.scoring.ScoreAlgaeNetNoTurn;
 import frc.robot.commands.sequences.RemoveAlgaeL2noCoral;
-import frc.robot.commands.windmill.InitializePivotAndElevator;
 import frc.robot.commands.windmill.Windmill;
+import frc.robot.commands.windmill.elevator.ZeroElevator;
 import frc.robot.subsystems.Algae.AlgaeSubsystem;
 import frc.robot.subsystems.Coral.CoralSubsystem;
 import frc.robot.subsystems.Drive.DriveSubsystem;
@@ -38,8 +38,7 @@ public class ChoreoAutoCenterBargeAbv extends SequentialCommandGroup {
                 addCommands(
                                 new ParallelCommandGroup(
                                                 new SequentialCommandGroup(
-                                                                new InitializePivotAndElevator(pivotSubsystem,
-                                                                                elevatorSubsystem),
+                                                                new ZeroElevator(elevatorSubsystem),
                                                                 new Windmill(elevatorSubsystem, pivotSubsystem,
                                                                                 Constants.Windmill.WindmillState.Home,
                                                                                 false)),

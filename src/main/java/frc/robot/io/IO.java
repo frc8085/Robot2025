@@ -13,7 +13,9 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.windmill.*;
 import frc.robot.commands.scoring.*;
+import frc.robot.commands.sequences.RemoveAlgaeL2;
 import frc.robot.commands.sequences.RemoveAlgaeL2noCoral;
+import frc.robot.commands.sequences.RemoveAlgaeL3;
 import frc.robot.commands.sequences.RemoveAlgaeL3noCoral;
 import frc.robot.commands.manipulator.coral.*;
 import frc.robot.commands.manipulator.algae.*;
@@ -36,20 +38,19 @@ public class IO {
                 final Trigger zeroHeadingButton = Keymap.Layout.driverStartButton;
 
                 // final Trigger zeroElevator = operatorController.start();
-                final Trigger limelightTrigger1 = Keymap.Layout.driverXButton;
-                final Trigger limelightTrigger2 = Keymap.Layout.driverBButton;
+                final Trigger limelightLeftReefTrigger = Keymap.Layout.driverXButton;
+                final Trigger limelightRightReefTrigger = Keymap.Layout.driverBButton;
+                final Trigger limelightBargeTrigger = Keymap.Layout.driverUpButton;
 
                 // Driver operations
                 final Trigger ejectCoral = Keymap.Layout.driverAButton;
                 final Trigger pickUpCoral = Keymap.Layout.driverLeftTriggerButton;
                 final Trigger ejectAlgae = Keymap.Layout.driverYButton;
                 final Trigger shootAlgaeNetBlue = Keymap.Layout.driverLeftBumper;
-                // final Trigger left = Keymap.Layout.driverDownButton;
-                // final Trigger right = Keymap.Layout.driverUpButton;
-                final Trigger gorobotrelative = Keymap.Controllers.driverController.leftStick();
                 final Trigger raiseClimber = Keymap.Layout.driverRightButton;
                 final Trigger lowerClimber = Keymap.Layout.driverLeftButton;
                 final Trigger goSlow = Keymap.Layout.driverRightBumper;
+                final Trigger testButton = Keymap.Layout.driverDownButton;
 
                 // Operator Controls
                 final Trigger manualCoral = Keymap.Layout.operatorRightTriggerButton;
@@ -73,47 +74,29 @@ public class IO {
                 final Trigger pivotClockwise = Keymap.Controllers.operatorController.axisGreaterThan(4, 0.25);
                 final Trigger pivotCounterClockwise = Keymap.Controllers.operatorController.axisLessThan(4, -0.25);
 
+                testButton.onTrue(
+                                new RemoveAlgaeL2noCoral(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.algae, false));
                 // Initialization
                 // Zero elevator - carriage must be below stage 1 or it will zero where it is
                 // zeroElevator.onTrue(new ZeroElevator(robotContainer.elevator));
                 zeroArm.onTrue(new ZeroElevator(robotContainer.elevator));
                 zeroArm.and(altButtonOperator)
-                                .onTrue(new InitializePivotAndElevator(robotContainer.pivot, robotContainer.elevator));
+                                .onTrue(new ZeroElevator(robotContainer.elevator));
 
                 // Reset heading of robot for field relative drive
                 zeroHeadingButton.onTrue(new InstantCommand(() -> robotContainer.drivetrain.zeroHeading(),
                                 robotContainer.drivetrain));
 
                 // // Limelight Buttons
-                limelightTrigger1.onTrue(new SwerveDriveTargetReef(robotContainer.drivetrain, true)).onFalse(
+                limelightLeftReefTrigger.onTrue(new SwerveDriveTargetReef(robotContainer.drivetrain, true)).onFalse(
                                 new SwerveDriveTeleop(robotContainer.drivetrain));
-                limelightTrigger2.onTrue(
+                limelightRightReefTrigger.onTrue(
+                                new SwerveDriveTargetReef(robotContainer.drivetrain, false)).onFalse(
+                                                new SwerveDriveTeleop(robotContainer.drivetrain));
+                limelightBargeTrigger.onTrue(
                                 new SwerveDriveAlignBarge(robotContainer.drivetrain)).onFalse(
                                                 new SwerveDriveTeleop(robotContainer.drivetrain));
-
-                // limelightTrigger2.onTrue(
-                // new SwerveDriveTargetReef(robotContainer.drivetrain, false)).onFalse(
-                // new SwerveDriveTeleop(robotContainer.drivetrain));
-                // limelightTrigger1.onTrue(new SequentialCommandGroup(
-                // new ParallelRaceGroup(new WaitCommand(2),
-                // new AlignToAprilTagBlue(robotContainer.drivetrain,
-                // robotContainer.limelight)),
-                // new SwerveDriveTargetReef(robotContainer.drivetrain, true))).onFalse(
-                // new SwerveDriveTeleop(robotContainer.drivetrain));
-                // limelightTrigger2.onTrue(new SequentialCommandGroup(
-                // new ParallelRaceGroup(new WaitCommand(2),
-                // new AlignToAprilTagYellow(robotContainer.drivetrain,
-                // robotContainer.limelight)),
-                // new SwerveDriveTargetReef(robotContainer.drivetrain, false))).onFalse(
-                // new SwerveDriveTeleop(robotContainer.drivetrain));
-
-                gorobotrelative.onTrue(new InstantCommand(() -> {
-                        if (DriveConstants.FakeConstants.fieldRelative) {
-                                DriveConstants.FakeConstants.fieldRelative = false;
-                        } else {
-                                DriveConstants.FakeConstants.fieldRelative = true;
-                        }
-                }));
 
                 goSlow.onTrue(new SwerveDriveTeleopRoboRelativeSlow(robotContainer.drivetrain))
                                 .onFalse(new SwerveDriveTeleop(robotContainer.drivetrain));
@@ -134,10 +117,6 @@ public class IO {
                 shootAlgaeNetBlue.onTrue(new ScoreAlgaeNetNoTurn(robotContainer.algae,
                                 robotContainer.elevator, robotContainer.pivot, robotContainer.coral,
                                 false));
-                // shootAlgaeNetBlue.and(altButtonDriver).onTrue(new
-                // ScoreAlgaeNetNoTurn(robotContainer.algae,
-                // robotContainer.elevator, robotContainer.pivot, robotContainer.coral,
-                // false));
 
                 raiseClimber.onTrue(new RunCommand(() -> robotContainer.climber.moveUp(),
                                 robotContainer.climber))
@@ -189,34 +168,38 @@ public class IO {
                                 robotContainer.algae,
                                 false));
 
+                algaeReef2.and(altButtonOperator).onTrue(
+                                new RemoveAlgaeL2(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.algae,
+                                                false));
+                algaeReef3.and(altButtonOperator).onTrue(
+                                new RemoveAlgaeL3(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.algae,
+                                                false));
+
                 algaeProcessor.onTrue(new ToAlgaeGround(robotContainer.elevator, robotContainer.pivot));
 
-                coralDropOff1.onTrue(new ToCoralDropOff1(robotContainer.elevator, robotContainer.pivot, false));
+                coralDropOff1.onTrue(new ScoreCoralL1(robotContainer.elevator, robotContainer.pivot,
+                                robotContainer.coral, false));
 
-                coralDropOff2.onTrue(new ToCoralDropOff2(robotContainer.elevator, robotContainer.pivot, false));
+                coralDropOff2.onTrue(new ScoreCoralL2(robotContainer.elevator, robotContainer.pivot,
+                                robotContainer.coral, false));
 
-                coralDropOff3.onTrue(new ToCoralDropOff3(robotContainer.elevator, robotContainer.pivot, false));
+                coralDropOff3.onTrue(new ScoreCoralL3(robotContainer.elevator, robotContainer.pivot,
+                                robotContainer.coral, false));
 
-                // coralDropOff4.onTrue(new ToCoralDropOff4(robotContainer.elevator,
-                // robotContainer.pivot, false));
                 coralDropOff4.onTrue(new ScoreCoralL4(robotContainer.elevator,
                                 robotContainer.pivot,
                                 robotContainer.coral, false));
 
-                algaeReef3.and(altButtonOperator).onTrue(
-                                new RemoveAlgaeL3noCoral(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.algae,
-                                                true));
-
                 coralDropOff1.and(altButtonOperator)
-                                .onTrue(new ToCoralDropOff1(robotContainer.elevator, robotContainer.pivot, true));
+                                .onTrue(new ToCoralDropOff1(robotContainer.elevator, robotContainer.pivot, false));
                 coralDropOff2.and(altButtonOperator)
-                                .onTrue(new ToCoralDropOff2(robotContainer.elevator, robotContainer.pivot, true));
+                                .onTrue(new ToCoralDropOff2(robotContainer.elevator, robotContainer.pivot, false));
                 coralDropOff3.and(altButtonOperator)
-                                .onTrue(new ToCoralDropOff3(robotContainer.elevator, robotContainer.pivot, true));
+                                .onTrue(new ToCoralDropOff3(robotContainer.elevator, robotContainer.pivot, false));
                 coralDropOff4.and(altButtonOperator)
-                                .onTrue(new ScoreCoralL4(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.coral, true));
+                                .onTrue(new ToCoralDropOff4(robotContainer.elevator, robotContainer.pivot, false));
 
                 // commands that go with manual elevator/pivot movement
                 pivotClockwise

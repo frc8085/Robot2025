@@ -1,6 +1,7 @@
 package frc.robot.commands.manipulator.coral;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -18,10 +19,10 @@ public class EjectL4Coral extends SequentialCommandGroup {
                         PivotSubsystem pivotSubsystem) {
                 addCommands(
                                 new PrintCommand("Coral Eject Started"),
-                                new RunCommand(() -> coralSubsystem.eject(), coralSubsystem).withTimeout(1),
-                                new Pivot(pivotSubsystem,
-                                                Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralDropOff4 - 10)),
+                                new RunCommand(() -> coralSubsystem.eject(), coralSubsystem).withTimeout(.5),
                                 new InstantCommand(coralSubsystem::stop),
+                                new Pivot(pivotSubsystem,
+                                                Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralDropOff4 - 20)),
                                 new ToHomeCommand(elevatorSubsystem, pivotSubsystem));
 
         }

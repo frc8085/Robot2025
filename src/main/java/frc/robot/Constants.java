@@ -136,6 +136,9 @@ public final class Constants {
       CoralDropOff4(ElevatorConstants.kElevatorCoralDropOff4Height,
           Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralDropOff4), true),
 
+      AlgaeProcessor(ElevatorConstants.kElevatorAlgaePickUpFloorHeight,
+          Rotation2d.fromDegrees(PivotArmConstants.kPivotAlgaeProcessor)),
+
       AlgaePickUpFloor(ElevatorConstants.kElevatorAlgaePickUpFloorHeight,
           Rotation2d.fromDegrees(PivotArmConstants.kPivotAlgaePickUpFloor)),
       AlgaePickUpReef2(ElevatorConstants.kElevatorReef2Height, Rotation2d.fromDegrees(PivotArmConstants.kPivotReef)),

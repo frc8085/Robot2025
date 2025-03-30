@@ -61,4 +61,5 @@ public final class PivotArmConstants {
     public static final double kPivotAlgaeNetBlue = 60;
     public static final double kPivotAlgaeNetYellow = 0;
     public static final double kPivotAlgaeNetRaise = 25;
+    public static final double kPivotAlgaeProcessor = 108;
 }

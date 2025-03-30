@@ -69,36 +69,6 @@ public class RobotContainer {
                                 // IMPLEMENT DEFAULT COMMAND
                                 new SwerveDriveTeleop(this.drivetrain));
 
-                // Preload trajectories for Choreo
-
-                // private Set<String> listFilesUsingFilesList(String dir) throws IOException {
-                // try (Stream<Path> stream = Files.list(Paths.get(dir))) {
-                // return stream
-                // .filter(file -> !Files.isDirectory(file))
-                // .map(Path::getFileName)
-                // .map(Path::toString)
-                // .collect(Collectors.toSet());
-                // }
-                // }
-                // private Map<String, Optional<Trajectory<SwerveSample>>> loadTrajectories() {
-                // Set<String> trajNames;
-                // try {
-                // if (Robot.isReal()) {
-                // trajNames = listFilesUsingFilesList("/home/lvuser/deploy/choreo");
-                // } else {
-                // trajNames = listFilesUsingFilesList("src/main/deploy/choreo");
-                // }
-                // } catch (IOException e) {
-                // DriverStation.reportError("Invalid Directory! Trajectories failed to load!",
-                // true);
-                // return null;
-                // }
-                // return trajNames.stream().collect(Collectors.toMap(
-                // entry -> entry.replace(".traj", ""),
-                // entry -> Choreo.loadTrajectory(entry.replace(".traj", ""))));
-                // }
-                // trajMap = loadTrajectories();
-
                 // Another option that allows you to specify the default auto by its name
                 autoChooser = AutoBuilder.buildAutoChooser("Test Auto");
                 autoChooser.addOption("CenterBarge",

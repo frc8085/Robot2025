@@ -163,18 +163,11 @@ public class PivotSubsystem extends SubsystemBase {
         }
     }
 
-    public boolean pivotAtCoral4DropOffAngle(boolean yellow) {
-        if (!yellow) {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotCoralDropOff4
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotCoralDropOff4
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        } else {
-            return ((getCurrentRotation().getDegrees() <= (-PivotArmConstants.kPivotCoralDropOff4
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (-PivotArmConstants.kPivotCoralDropOff4
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        }
+    public boolean pivotAtCoral4DropOffAngle() {
+        return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotCoralDropOff4
+                + PivotArmConstants.kPivotTolerance.getDegrees())) &&
+                (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotCoralDropOff4
+                        - PivotArmConstants.kPivotTolerance.getDegrees())));
     }
 
     private Rotation2d motorPosToAngle(double pos) {
