@@ -346,6 +346,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     // this.m_odometry.resetPosition(this.getGyroOrientation(),
     // this.getModulePositions(), pose);
+    this.m_odometry.resetPosition(Rotation2d.kZero, this.getModulePositions(), new Pose2d());
 
     Rotation2d gyroOffset = pose.getRotation().minus(this.getRotation());
     // this.m_gyro.setYaw(gyroOffset.getDegrees());

@@ -19,13 +19,20 @@ public class SwerveDriveChoreoFollow extends Command {
     boolean isRedAlliance = false;
     boolean isFinished = false;
     boolean moveToStartPose = false;
+    boolean stopAtEnd = true;
 
     public SwerveDriveChoreoFollow(DriveSubsystem driveSubsystem, Optional<Trajectory<SwerveSample>> trajectory,
-            boolean moveToStartPose) {
+            boolean moveToStartPose, boolean stopAtEnd) {
         this.driveSubsystem = driveSubsystem;
         this.trajectory = trajectory;
         this.moveToStartPose = moveToStartPose;
+        this.stopAtEnd = stopAtEnd;
         addRequirements(driveSubsystem);
+    }
+
+    public SwerveDriveChoreoFollow(DriveSubsystem driveSubsystem, Optional<Trajectory<SwerveSample>> trajectory,
+            boolean moveToStartPose) {
+        this(driveSubsystem, trajectory, moveToStartPose, true);
     }
 
     @Override
@@ -96,5 +103,8 @@ public class SwerveDriveChoreoFollow extends Command {
     @Override
     public void end(boolean interrupted) {
         System.out.println("Auto Path Ended");
+        if (this.stopAtEnd) {
+            this.driveSubsystem.stop();
+        }
     }
 }

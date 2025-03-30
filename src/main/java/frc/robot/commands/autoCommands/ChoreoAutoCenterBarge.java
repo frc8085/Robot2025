@@ -21,76 +21,74 @@ import choreo.trajectory.Trajectory;
 import java.util.Optional;
 
 public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
-    public ChoreoAutoCenterBarge(DriveSubsystem driveSubsystem, PivotSubsystem pivotSubsystem,
-            ElevatorSubsystem elevatorSubsystem, AlgaeSubsystem algaeSubsystem, CoralSubsystem coralSubsystem) {
+        public ChoreoAutoCenterBarge(DriveSubsystem driveSubsystem, PivotSubsystem pivotSubsystem,
+                        ElevatorSubsystem elevatorSubsystem, AlgaeSubsystem algaeSubsystem,
+                        CoralSubsystem coralSubsystem) {
 
-        // Optional<Trajectory<SwerveSample>> path1 =
-        // Choreo.loadTrajectory("CenterBargeToReef21");
-        // Optional<Trajectory<SwerveSample>> path2 =
-        // Choreo.loadTrajectory("Reef21ToScoreBarge");
-        // Optional<Trajectory<SwerveSample>> path3 =
-        // Choreo.loadTrajectory("ScoreBargeToReef20");
-        // Optional<Trajectory<SwerveSample>> path4 =
-        // Choreo.loadTrajectory("Reef20ToScoreBarge");
-        // Optional<Trajectory<SwerveSample>> path5 =
-        // Choreo.loadTrajectory("ScoreBargeToSource");
+                Optional<Trajectory<SwerveSample>> path1 = Choreo.loadTrajectory("CenterBargeToReef21");
+                Optional<Trajectory<SwerveSample>> path2 = Choreo.loadTrajectory("Reef21ToScoreBarge");
+                Optional<Trajectory<SwerveSample>> path3 = Choreo.loadTrajectory("ScoreBargeToReef20");
+                Optional<Trajectory<SwerveSample>> path4 = Choreo.loadTrajectory("Reef20ToScoreBarge");
+                Optional<Trajectory<SwerveSample>> path5 = Choreo.loadTrajectory("ScoreBargeToSource");
 
-        addCommands(
-                new ParallelCommandGroup(
-                        new SequentialCommandGroup(
-                                new InitializePivotAndElevator(pivotSubsystem, elevatorSubsystem),
-                                new Windmill(elevatorSubsystem, pivotSubsystem,
-                                        Constants.Windmill.WindmillState.Home,
-                                        false)),
-                        new SwerveDriveChoreoFollow(
-                                driveSubsystem,
-                                Choreo.loadTrajectory("CenterBargeToReef21"), true)),
-                new RemoveAlgaeL2noCoral(elevatorSubsystem, pivotSubsystem,
-                        algaeSubsystem,
-                        false),
-                new SwerveDriveChoreoFollow(
-                        driveSubsystem,
-                        Choreo.loadTrajectory("Reef21ToScoreBarge"), false),
-                new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem, coralSubsystem,
-                        true)
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path3, false),
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path4, false),
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path5, false)
+                addCommands(
+                                new ParallelCommandGroup(
+                                                new SequentialCommandGroup(
+                                                                new InitializePivotAndElevator(pivotSubsystem,
+                                                                                elevatorSubsystem),
+                                                                new Windmill(elevatorSubsystem, pivotSubsystem,
+                                                                                Constants.Windmill.WindmillState.Home,
+                                                                                false)),
+                                                new SwerveDriveChoreoFollow(
+                                                                driveSubsystem,
+                                                                path1, true)),
+                                new RemoveAlgaeL2noCoral(elevatorSubsystem, pivotSubsystem,
+                                                algaeSubsystem,
+                                                false),
+                                new SwerveDriveChoreoFollow(
+                                                driveSubsystem,
+                                                path2, false),
+                                new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                                                coralSubsystem,
+                                                true)
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path3, false),
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path4, false),
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path5, false)
 
-        // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
-        // coralSubsystem,
-        // driveSubsystem,
-        // isScheduled()),
-        // new AutoToHomeCommand(elevatorSubsystem, pivotSubsystem),
-        // new AutoWaitUntilElevatorBelowSafeTravelHeight(elevatorSubsystem),
-        // new ParallelDeadlineGroup(
-        // new AutoCoralPickup(elevatorSubsystem, pivotSubsystem, coralSubsystem),
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path2, false)),
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path3, false),
-        // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
-        // coralSubsystem,
-        // driveSubsystem,
-        // isScheduled()),
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path4, false),
-        // new SwerveDriveChoreoFollow(
-        // driveSubsystem,
-        // path5, false),
-        // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
-        // coralSubsystem,
-        // driveSubsystem,
-        // isScheduled()));
-        );
-    }
+                // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                // coralSubsystem,
+                // driveSubsystem,
+                // isScheduled()),
+                // new AutoToHomeCommand(elevatorSubsystem, pivotSubsystem),
+                // new AutoWaitUntilElevatorBelowSafeTravelHeight(elevatorSubsystem),
+                // new ParallelDeadlineGroup(
+                // new AutoCoralPickup(elevatorSubsystem, pivotSubsystem, coralSubsystem),
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path2, false)),
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path3, false),
+                // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                // coralSubsystem,
+                // driveSubsystem,
+                // isScheduled()),
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path4, false),
+                // new SwerveDriveChoreoFollow(
+                // driveSubsystem,
+                // path5, false),
+                // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                // coralSubsystem,
+                // driveSubsystem,
+                // isScheduled()));
+                );
+        }
 }
