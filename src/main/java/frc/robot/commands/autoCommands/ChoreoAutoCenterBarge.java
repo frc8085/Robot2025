@@ -1,11 +1,15 @@
 package frc.robot.commands.autoCommands;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.drivetrain.SwerveDriveChoreoFollow;
 import frc.robot.commands.scoring.ScoreAlgaeNetNoTurn;
-import frc.robot.commands.sequences.RemoveAlgaeL2noCoral;
+import frc.robot.commands.sequences.RemoveAlgaeL2andScoreL3;
+import frc.robot.commands.sequences.RemoveAlgaeL3noCoral;
+import frc.robot.commands.states.ToAutoTravel;
 import frc.robot.commands.windmill.Windmill;
 import frc.robot.commands.windmill.elevator.ZeroElevator;
 import frc.robot.subsystems.Algae.AlgaeSubsystem;
@@ -40,24 +44,30 @@ public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
                                                 new SwerveDriveChoreoFollow(
                                                                 driveSubsystem,
                                                                 path1, true)),
-                                new RemoveAlgaeL2noCoral(elevatorSubsystem, pivotSubsystem,
-                                                algaeSubsystem,
-                                                false),
+                                new RemoveAlgaeL2andScoreL3(elevatorSubsystem, pivotSubsystem, algaeSubsystem,
+                                                coralSubsystem, false),
+                                new RunCommand(() -> coralSubsystem.eject(), coralSubsystem).withTimeout(1),
+                                new InstantCommand(coralSubsystem::stop),
+                                new ToAutoTravel(elevatorSubsystem, pivotSubsystem),
                                 new SwerveDriveChoreoFollow(
                                                 driveSubsystem,
                                                 path2, false),
                                 new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
                                                 coralSubsystem,
-                                                true)
-                // new SwerveDriveChoreoFollow(
-                // driveSubsystem,
-                // path3, false),
-                // new SwerveDriveChoreoFollow(
-                // driveSubsystem,
-                // path4, false),
-                // new SwerveDriveChoreoFollow(
-                // driveSubsystem,
-                // path5, false)
+                                                true),
+                                new SwerveDriveChoreoFollow(
+                                                driveSubsystem,
+                                                path3, false),
+                                new RemoveAlgaeL3noCoral(elevatorSubsystem, pivotSubsystem, algaeSubsystem, false),
+                                new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                                                coralSubsystem,
+                                                true),
+                                new SwerveDriveChoreoFollow(
+                                                driveSubsystem,
+                                                path4, false),
+                                new SwerveDriveChoreoFollow(
+                                                driveSubsystem,
+                                                path5, false)
 
                 // new AutoScoreCoralL4(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
                 // coralSubsystem,

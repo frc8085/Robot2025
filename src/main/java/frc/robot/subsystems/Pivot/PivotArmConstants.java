@@ -52,7 +52,7 @@ public final class PivotArmConstants {
     public static final double kPivotCoralPickup = 120;
     public static final double kPivotCoralDropOff1 = -100;
     public static final double kPivotCoralDropOff = -72;
-    public static final double kPivotCoralDropOff4 = -56;
+    public static final double kPivotCoralDropOff4 = -54;
     public static final double kPivotAlgaePickUpFloor = 116;
     public static final double kPivotReef = 102;
     public static final double kPivotAlgaePickUpFloorFlip = 90;

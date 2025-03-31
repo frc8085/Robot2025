@@ -26,6 +26,7 @@ public final class ElevatorConstants {
     // Elevator Heights for different states
     public static double ropeAdjustmentFactor = .93;
     public static double kElevatorHomeHeight = 30;
+    public static double kElevatorAutoTravelHeight = 64;
     public static double kElevatorAlgaeHoldHeight = 47;
     public static double kElevatorCoralPickupHeight = 25;
     public static double kElevatorCoralPickupAlternateHeight = 20;
@@ -36,10 +37,10 @@ public final class ElevatorConstants {
     public static double kElevatorCoralDropOff3Height = 64; // 75 * ropeAdjustmentFactor + kElevatorAdjustment
     public static double kElevatorCoralDropOff4Height = 105; // changed from 130
     // Drop off 4 was 130 before but 120 seems to be our max height
-    public static double kElevatorAlgaePickUpFloorHeight = 15;
-    public static double kElevatorReef2Height = 40 * ropeAdjustmentFactor;
-    public static double kElevatorReef3Height = 70 * ropeAdjustmentFactor;
-    public static double kElevatorAlgaePickUpFloorFlipHeight = 15;
+    public static double kElevatorAlgaePickUpFloorHeight = 19;
+    public static double kElevatorReef2Height = 40;
+    public static double kElevatorReef3Height = 65;
+    public static double kElevatorAlgaePickUpFloorFlipHeight = 19;
     public static double kElevatorReef2FlipHeight = 25;
     public static double kElevatorReef3FlipHeight = 45;
     public static double kElevatorNetHeight = 99; // changed from 120

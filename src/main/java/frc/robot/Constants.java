@@ -85,7 +85,7 @@ public final class Constants {
 
     // X offset, Y offset, Rotation offset
     public static final double leftYOffset = 0;
-    public static final double rightYOffset = -0.18;
+    public static final double rightYOffset = -0.25;
     // for offsets, x positive is backwards from the apriltag, y positive is to the
     // right of the apriltag
     // so for example, and x of 1 and a y of 1 would be 1 meter back and 1 meter to
@@ -125,7 +125,7 @@ public final class Constants {
           Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralPickup)),
       CoralPickupAltHigher(ElevatorConstants.kElevatorCoralPickupAltHigher,
           Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralPickup)),
-
+      AutoTravel(ElevatorConstants.kElevatorAutoTravelHeight, Rotation2d.fromDegrees(PivotArmConstants.kPivotHome)),
       // coral dropoff happens on both sides
       CoralDropOff1(ElevatorConstants.kElevatorCoralDropOff1Height,
           Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralDropOff1), true),

@@ -14,12 +14,14 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.windmill.*;
 import frc.robot.commands.scoring.*;
 import frc.robot.commands.sequences.RemoveAlgaeL2;
+import frc.robot.commands.sequences.RemoveAlgaeL2andScoreL3;
 import frc.robot.commands.sequences.RemoveAlgaeL2noCoral;
 import frc.robot.commands.sequences.RemoveAlgaeL3;
 import frc.robot.commands.sequences.RemoveAlgaeL3noCoral;
 import frc.robot.commands.manipulator.coral.*;
 import frc.robot.commands.manipulator.algae.*;
 import frc.robot.commands.states.*;
+import frc.robot.commands.autoCommands.ChoreoAutoCenterBarge;
 import frc.robot.commands.climber.*;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.windmill.elevator.*;
@@ -75,8 +77,8 @@ public class IO {
                 final Trigger pivotCounterClockwise = Keymap.Controllers.operatorController.axisLessThan(4, -0.25);
 
                 testButton.onTrue(
-                                new RemoveAlgaeL2noCoral(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.algae, false));
+                                new EjectL4Coral(robotContainer.coral, robotContainer.elevator,
+                                                robotContainer.pivot));
                 // Initialization
                 // Zero elevator - carriage must be below stage 1 or it will zero where it is
                 // zeroElevator.onTrue(new ZeroElevator(robotContainer.elevator));
@@ -102,7 +104,7 @@ public class IO {
                                 .onFalse(new SwerveDriveTeleop(robotContainer.drivetrain));
 
                 // commands that go with driver operations
-                ejectCoral.onTrue(new EjectCoral(robotContainer.coral, robotContainer.elevator,
+                ejectCoral.onTrue(new EjectL4Coral(robotContainer.coral, robotContainer.elevator,
                                 robotContainer.pivot));
                 ejectCoral.and(altButtonDriver).onTrue(new DropCoral(robotContainer.coral,
                                 robotContainer.elevator, robotContainer.pivot));
@@ -179,16 +181,19 @@ public class IO {
 
                 algaeProcessor.onTrue(new ToAlgaeGround(robotContainer.elevator, robotContainer.pivot));
 
-                coralDropOff1.onTrue(new ScoreCoralL1(robotContainer.elevator, robotContainer.pivot,
-                                robotContainer.coral, false));
+                coralDropOff1.and(altButtonOperator.negate())
+                                .onTrue(new ScoreCoralL1(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.coral, false));
 
-                coralDropOff2.onTrue(new ScoreCoralL2(robotContainer.elevator, robotContainer.pivot,
-                                robotContainer.coral, false));
+                coralDropOff2.and(altButtonOperator.negate())
+                                .onTrue(new ScoreCoralL2(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.coral, false));
 
-                coralDropOff3.onTrue(new ScoreCoralL3(robotContainer.elevator, robotContainer.pivot,
-                                robotContainer.coral, false));
+                coralDropOff3.and(altButtonOperator.negate())
+                                .onTrue(new ScoreCoralL3(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.coral, false));
 
-                coralDropOff4.onTrue(new ScoreCoralL4(robotContainer.elevator,
+                coralDropOff4.and(altButtonOperator.negate()).onTrue(new ScoreCoralL4(robotContainer.elevator,
                                 robotContainer.pivot,
                                 robotContainer.coral, false));
 

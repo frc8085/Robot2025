@@ -22,8 +22,8 @@ public class EjectL4Coral extends SequentialCommandGroup {
                                 new RunCommand(() -> coralSubsystem.eject(), coralSubsystem).withTimeout(.5),
                                 new InstantCommand(coralSubsystem::stop),
                                 new Pivot(pivotSubsystem,
-                                                Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralDropOff4 - 20)),
-                                new ToHomeCommand(elevatorSubsystem, pivotSubsystem));
+                                                Rotation2d.fromDegrees(PivotArmConstants.kPivotCoralDropOff4 - 20)));
+                // new ToHomeCommand(elevatorSubsystem, pivotSubsystem));
 
         }
 }

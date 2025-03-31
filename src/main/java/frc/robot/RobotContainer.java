@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autoCommands.ChoreoAutoCenterBarge;
-import frc.robot.commands.autoCommands.ChoreoAutoCenterBargeAbv;
 import frc.robot.commands.autoCommands.ChoreoAutoOppoToL4;
 import frc.robot.commands.drivetrain.SwerveDriveTeleop;
 import frc.robot.io.IO;
@@ -73,9 +72,6 @@ public class RobotContainer {
                 autoChooser = AutoBuilder.buildAutoChooser("Test Auto");
                 autoChooser.addOption("CenterBarge",
                                 new ChoreoAutoCenterBarge(this.drivetrain, this.pivot, this.elevator, this.algae,
-                                                this.coral));
-                autoChooser.addOption("CenterBargeAbv",
-                                new ChoreoAutoCenterBargeAbv(this.drivetrain, this.pivot, this.elevator, this.algae,
                                                 this.coral));
                 autoChooser.addOption("ChoreoOppoBarge", new ChoreoAutoOppoToL4(this.drivetrain, this.algae,
                                 this.elevator, this.pivot, this.coral));
