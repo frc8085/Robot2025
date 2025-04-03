@@ -10,10 +10,10 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TuningModeConstants;
 
-public class PivotSubsystem extends SubsystemBase {
+public class Alt_NewPivotSubsystem extends SubsystemBase {
     private final TalonFX m_pivotMotor = new TalonFX(PivotArmConstants.kPivotArmCanId, "rio");
     private final CANcoder m_pivotEncoder = new CANcoder(PivotArmConstants.kPivotArmCancoderCanId, "rio");
 
@@ -46,21 +46,23 @@ public class PivotSubsystem extends SubsystemBase {
 
     private Rotation2d m_targetAngle = new Rotation2d(0);
 
-    public PivotSubsystem() {
+    public Alt_NewPivotSubsystem() {
 
         /* Configure CANcoder to zero the magnet appropriately */
         m_pivotEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         m_pivotEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        m_pivotEncoderConfig.MagnetSensor.MagnetOffset = PivotArmConstants.kPivotCancoderOffset;
+        m_pivotEncoderConfig.MagnetSensor.MagnetOffset = PivotArmConstants.kPivotCancoderVerticalOffset;
         m_pivotEncoder.getConfigurator().apply(m_pivotEncoderConfig);
 
         var slot0Configs = new Slot0Configs();
         slot0Configs.kP = PivotArmConstants.kPivotArmP;
         slot0Configs.kI = PivotArmConstants.kPivotArmI;
         slot0Configs.kD = PivotArmConstants.kPivotArmD;
+        slot0Configs.kG = PivotArmConstants.kPivotArmG;
+        slot0Configs.kS = PivotArmConstants.kPivotArmS;
         slot0Configs.kV = PivotArmConstants.kPivotArmV;
         slot0Configs.kA = PivotArmConstants.kPivotArmA;
-        // slot0Configs.kS = PivotArmConstants.kPivotArmS;
+        slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
 
         // new stuff for Synced Cancoder
         m_pivotMotorConfig.Feedback.FeedbackRemoteSensorID = m_pivotEncoder.getDeviceID();
@@ -94,88 +96,21 @@ public class PivotSubsystem extends SubsystemBase {
 
     }
 
-    // Pivot Angle Checks
-    public boolean pivotAtAlgaeYellowScorePosition() {
-        return getCurrentRotation().getDegrees() <= PivotArmConstants.kPivotAlgaeNetYellow
-                + PivotArmConstants.kPivotTolerance.getDegrees();
-    }
+    // public void initializePivot() {
+    // // read motor encoder rotation, get offset from 0
+    // double rot = this.getCurrentRotation().getRotations();
+    // System.err.println("Pivot Arm Encoder Rotations: " + rot);
+    // // set the motor encoder to 180 + offset
+    // this.m_pivotMotor.setPosition(0.5 + rot); // 0.5 is the offset
+    // }
 
-    public boolean pivotAtAlgaeBlueScorePosition() {
-        return (getCurrentRotation().getDegrees() <= PivotArmConstants.kPivotAlgaeNetBlue
-                + PivotArmConstants.kPivotTolerance.getDegrees())
-                && (getCurrentRotation().getDegrees() >= PivotArmConstants.kPivotAlgaeNetBlue
-                        - PivotArmConstants.kPivotTolerance.getDegrees());
-    }
-
-    public boolean pivotAtHomeAngle() {
-        return ((getCurrentRotation().getDegrees() <= (-PivotArmConstants.kPivotHome
-                + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                (getCurrentRotation().getDegrees() >= (-PivotArmConstants.kPivotHome
-                        - PivotArmConstants.kPivotTolerance.getDegrees())));
-    }
-
-    public boolean pivotAtCoralDropOffAngle(boolean yellow) {
-        if (!yellow) {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotCoralDropOff
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotCoralDropOff
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        } else {
-            return ((getCurrentRotation().getDegrees() <= (-PivotArmConstants.kPivotCoralDropOff
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (-PivotArmConstants.kPivotCoralDropOff
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        }
-    }
-
-    public boolean pivotAtCoral1DropOffAngle(boolean yellow) {
-        if (!yellow) {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotCoralDropOff1
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotCoralDropOff1
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        } else {
-            return ((getCurrentRotation().getDegrees() <= (-PivotArmConstants.kPivotCoralDropOff1
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (-PivotArmConstants.kPivotCoralDropOff1
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        }
-    }
-
-    public boolean pivotAtAlgaeReef2DropOffAngle(boolean yellow) {
-        if (!yellow) {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotReef
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotReef
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        } else {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotReef2Flip
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotReef2Flip
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        }
-    }
-
-    public boolean pivotAtAlgaeReef3DropOffAngle(boolean yellow) {
-        if (!yellow) {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotReef
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotReef
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        } else {
-            return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotReef3Flip
-                    + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                    (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotReef3Flip
-                            - PivotArmConstants.kPivotTolerance.getDegrees())));
-        }
-    }
-
-    public boolean pivotAtCoral4DropOffAngle() {
-        return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotCoralDropOff4
-                + PivotArmConstants.kPivotTolerance.getDegrees())) &&
-                (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotCoralDropOff4
-                        - PivotArmConstants.kPivotTolerance.getDegrees())));
-    }
+    // public boolean pivotAtCoral4DropOffAngle() {
+    // return ((getCurrentRotation().getDegrees() <=
+    // (PivotArmConstants.kPivotCoralDropOff4
+    // + PivotArmConstants.kPivotTolerance.getDegrees())) &&
+    // (getCurrentRotation().getDegrees() >= (PivotArmConstants.kPivotCoralDropOff4
+    // - PivotArmConstants.kPivotTolerance.getDegrees())));
+    // }
 
     private Rotation2d motorPosToAngle(double pos) {
         return new Rotation2d(pos * PivotArmConstants.MOTOR_POSITION_TO_ANGLE_SCALING_FACTOR);
@@ -204,20 +139,32 @@ public class PivotSubsystem extends SubsystemBase {
             angle = PivotArmConstants.kPivotArmMaxManual;
         }
 
+        // motionMagicPositionControl.Position = angleToMotorPos(angle);
+        // motionMagicPositionControl.FeedForward = Math.sin(angle.getRadians())
+        // * PivotArmConstants.kPivotArmFF;
         this.closedLoop = true;
+
         this.m_targetAngle = angle;
 
+        // m_pivotMotor.setControl(motionMagicPositionControl);
+        // SmartDashboard.putNumber("rotation2d value", angle.getRotations());
+
+    }
+
+    public double getCalculatedMotorFF() {
+        double angle = getCurrentRotation().getRadians();
+        return Math.sin(angle) * PivotArmConstants.kPivotArmFF;
     }
 
     public double getCurrentPosition() {
         pivotArmPosition.refresh();
-        return pivotArmPosition.getValueAsDouble();
+        return pivotArmPosition.getValueAsDouble() + 0.5; // +180 to get the correct angle
     }
 
-    public double getCurrentEncoderPosition() {
-        pivotEncoderPosition.refresh();
-        return pivotEncoderPosition.getValueAsDouble();
-    }
+    // public double getCurrentEncoderPosition() {
+    // pivotEncoderPosition.refresh();
+    // return pivotEncoderPosition.getValueAsDouble();
+    // }
 
     public double getCurrentVelocity() {
         pivotArmVelocity.refresh();
@@ -235,13 +182,20 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        if (TuningModeConstants.kPivotTuning) {
-            SmartDashboard.putNumber("Pivot Arm Angle", motorPosToAngle(getCurrentPosition()).getDegrees());
-            // SmartDashboard.putNumber("CancoderReading", getCurrentEncoderPosition());
-            // SmartDashboard.putNumber("Motor Position", getCurrentPosition());
-        }
-
+        SmartDashboard.putNumber("Pivot Arm Angle motor", getCurrentRotation().getRotations());
+        SmartDashboard.putBoolean("Pivot Arm in Danger Zone", inDangerZone());
+        SmartDashboard.putBoolean("Pivot at Home Angle", pivotAtHomeAngle());
+        // if (TuningModeConstants.kPivotTuning) {
+        SmartDashboard.putNumber("Pivot Arm Angle",
+                getCurrentRotation().getDegrees());
+        // // SmartDashboard.putNumber("CancoderReading", getCurrentEncoderPosition());
+        // // SmartDashboard.putNumber("Motor Position", getCurrentPosition());
+        // }
         if (this.closedLoop) {
+            // SmartDashboard.putNumber("Pivot Arm FF", getCalculatedMotorFF());
+
+            // this.m_pivotMotor.setControl(motionMagicPositionControl.withFeedForward(getCalculatedMotorFF()));
+
             double pivotVoltage = this.m_pidController.calculate(this.getCurrentRotation().getDegrees(),
                     this.m_targetAngle.getDegrees());
 
@@ -274,6 +228,10 @@ public class PivotSubsystem extends SubsystemBase {
         m_pivotMotor.set(0);
     }
 
+    public boolean reefMirrored() {
+        return getCurrentRotation().getDegrees() < 0;
+    }
+
     // checks whether the pivot arm is in the danger zone for the elevator at target
     // angle GOOD
     // public boolean targetInDangerZone(Rotation2d targetAngle) {
@@ -294,6 +252,10 @@ public class PivotSubsystem extends SubsystemBase {
         return targetInDangerZone(getCurrentRotation());
     }
 
+    public boolean newSafePivotAngle(Rotation2d targetAngle) {
+        return (targetAngle.getDegrees() < -90) && (targetAngle.getDegrees() > -180);
+    }
+
     public boolean willPivotThroughDangerZone(Rotation2d targetAngle) {
         var result = false;
 
@@ -312,6 +274,12 @@ public class PivotSubsystem extends SubsystemBase {
         }
 
         return result;
+    }
+
+    public boolean pivotAtHomeAngle() {
+        int tolerance = 5;
+        return ((getCurrentRotation().getDegrees() < (PivotArmConstants.kPivotHome + tolerance))
+                && (getCurrentRotation().getDegrees() > (PivotArmConstants.kPivotHome - tolerance)));
     }
 
     public void holdPivotArm() {

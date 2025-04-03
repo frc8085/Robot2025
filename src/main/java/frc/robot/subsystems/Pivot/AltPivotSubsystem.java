@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TuningModeConstants;
 
-public class PivotSubsystem extends SubsystemBase {
+public class AltPivotSubsystem extends SubsystemBase {
     private final TalonFX m_pivotMotor = new TalonFX(PivotArmConstants.kPivotArmCanId, "rio");
     private final CANcoder m_pivotEncoder = new CANcoder(PivotArmConstants.kPivotArmCancoderCanId, "rio");
 
@@ -46,7 +46,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private Rotation2d m_targetAngle = new Rotation2d(0);
 
-    public PivotSubsystem() {
+    public AltPivotSubsystem() {
 
         /* Configure CANcoder to zero the magnet appropriately */
         m_pivotEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;

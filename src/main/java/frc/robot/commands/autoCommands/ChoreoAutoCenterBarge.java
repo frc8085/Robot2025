@@ -59,12 +59,13 @@ public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
                                                 driveSubsystem,
                                                 path3, false),
                                 new RemoveAlgaeL3noCoral(elevatorSubsystem, pivotSubsystem, algaeSubsystem, false),
+                                new ParallelCommandGroup(new ToAutoTravel(elevatorSubsystem, pivotSubsystem),
+                                                new SwerveDriveChoreoFollow(
+                                                                driveSubsystem,
+                                                                path4, false)),
                                 new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
                                                 coralSubsystem,
                                                 true),
-                                new SwerveDriveChoreoFollow(
-                                                driveSubsystem,
-                                                path4, false),
                                 new SwerveDriveChoreoFollow(
                                                 driveSubsystem,
                                                 path5, false)

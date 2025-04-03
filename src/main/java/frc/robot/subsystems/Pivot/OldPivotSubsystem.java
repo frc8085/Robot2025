@@ -14,7 +14,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -22,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TuningModeConstants;
 
-public class PivotSubsystem extends SubsystemBase {
+public class OldPivotSubsystem extends SubsystemBase {
     private final TalonFX m_pivotMotor = new TalonFX(PivotArmConstants.kPivotArmCanId, "rio");
     private final CANcoder m_pivotEncoder = new CANcoder(PivotArmConstants.kPivotArmCancoderCanId, "rio");
 
@@ -40,13 +39,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private final CurrentLimitsConfigs m_currentLimits = new CurrentLimitsConfigs();
 
-    private boolean closedLoop = false;
-
-    private PIDController m_pidController = new PIDController(0.1, 0, 0.001);
-
-    private Rotation2d m_targetAngle = new Rotation2d(0);
-
-    public PivotSubsystem() {
+    public OldPivotSubsystem() {
 
         /* Configure CANcoder to zero the magnet appropriately */
         m_pivotEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
@@ -204,8 +197,11 @@ public class PivotSubsystem extends SubsystemBase {
             angle = PivotArmConstants.kPivotArmMaxManual;
         }
 
-        this.closedLoop = true;
-        this.m_targetAngle = angle;
+        motionMagicPositionControl.Position = angleToMotorPos(angle);
+        motionMagicPositionControl.FeedForward = Math.sin(angle.getRadians())
+                * PivotArmConstants.kPivotArmFF;
+        m_pivotMotor.setControl(motionMagicPositionControl);
+        SmartDashboard.putNumber("rotation2d value", angle.getRotations());
 
     }
 
@@ -241,36 +237,17 @@ public class PivotSubsystem extends SubsystemBase {
             // SmartDashboard.putNumber("Motor Position", getCurrentPosition());
         }
 
-        if (this.closedLoop) {
-            double pivotVoltage = this.m_pidController.calculate(this.getCurrentRotation().getDegrees(),
-                    this.m_targetAngle.getDegrees());
-
-            if (pivotVoltage > 3) {
-                pivotVoltage = 3;
-            } else if (pivotVoltage < -3) {
-                pivotVoltage = -3;
-            }
-
-            double feedforward = Math.sin(this.getCurrentRotation().getRadians()) * PivotArmConstants.kPivotArmFF;
-
-            pivotVoltage += feedforward;
-
-            this.m_pivotMotor.setVoltage(pivotVoltage);
-        }
     }
 
     public void start() {
-        this.closedLoop = false;
         m_pivotMotor.set(PivotArmConstants.kPivotArmSpeed);
     }
 
     public void reverse() {
-        this.closedLoop = false;
         m_pivotMotor.set(-PivotArmConstants.kPivotArmSpeed);
     }
 
     public void stop() {
-        this.closedLoop = false;
         m_pivotMotor.set(0);
     }
 
