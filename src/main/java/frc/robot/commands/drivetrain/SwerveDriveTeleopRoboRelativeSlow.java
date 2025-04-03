@@ -26,9 +26,9 @@ public class SwerveDriveTeleopRoboRelativeSlow extends Command {
 
         double invert = this.driveSubsystem.invertForAlliance();
 
-        double leftX = MathUtil.applyDeadband(-Controllers.driverController.getLeftX() * invert,
+        double leftX = MathUtil.applyDeadband(-Controllers.driverController.getLeftX(),
                 OIConstants.kDriveDeadband);
-        double leftY = MathUtil.applyDeadband(-Controllers.driverController.getLeftY() * invert,
+        double leftY = MathUtil.applyDeadband(-Controllers.driverController.getLeftY(),
                 OIConstants.kDriveDeadband);
         double rightX = MathUtil.applyDeadband(-Math.pow(Controllers.driverController.getRightX(), 3),
                 OIConstants.kTurnDeadband);

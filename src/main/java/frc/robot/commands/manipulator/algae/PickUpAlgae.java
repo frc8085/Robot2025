@@ -37,7 +37,7 @@ public class PickUpAlgae extends Command {
                         algaeSubsystem.stop();
                         System.out.println("Algae PickUp Interrupted");
                 } else {
-                        Commands.waitSeconds(.5);
+                        Commands.waitSeconds(1);
                         algaeSubsystem.holdAlgae();
                         System.out.println("Algae PickUp Completed");
                 }

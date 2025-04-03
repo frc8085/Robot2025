@@ -104,7 +104,7 @@ public class IO {
                                 .onFalse(new SwerveDriveTeleop(robotContainer.drivetrain));
 
                 // commands that go with driver operations
-                ejectCoral.onTrue(new EjectL4Coral(robotContainer.coral, robotContainer.elevator,
+                ejectCoral.onTrue(new EjectCoral(robotContainer.coral, robotContainer.elevator,
                                 robotContainer.pivot));
                 ejectCoral.and(altButtonDriver).onTrue(new DropCoral(robotContainer.coral,
                                 robotContainer.elevator, robotContainer.pivot));

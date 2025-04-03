@@ -35,7 +35,7 @@ public class RemoveAlgaeL2andScoreL3 extends SequentialCommandGroup {
                                 new ToCoralDropOff3(elevatorSubsystem, pivotSubsystem, yellow),
                                 new WaitUntilCommand(elevatorSubsystem::elevatorAtCoralDropOff3Height),
                                 new WaitUntilCommand(() -> pivotSubsystem.pivotAtCoralDropOffAngle(yellow)),
-                                new WaitCommand(0.25));
+                                new WaitCommand(1));
 
         }
 }

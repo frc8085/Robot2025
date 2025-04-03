@@ -4,10 +4,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.commands.drivetrain.SwerveDriveChoreoFollow;
 import frc.robot.commands.scoring.ScoreAlgaeNetNoTurn;
+import frc.robot.commands.scoring.ScoreCoralL4;
 import frc.robot.commands.sequences.RemoveAlgaeL2andScoreL3;
+import frc.robot.commands.sequences.RemoveAlgaeL2noCoral;
 import frc.robot.commands.sequences.RemoveAlgaeL3noCoral;
 import frc.robot.commands.states.ToAutoTravel;
 import frc.robot.commands.windmill.Windmill;
@@ -23,8 +26,8 @@ import choreo.trajectory.Trajectory;
 
 import java.util.Optional;
 
-public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
-        public ChoreoAutoCenterBarge(DriveSubsystem driveSubsystem, PivotSubsystem pivotSubsystem,
+public class ChoreoL4AutoCenterBarge extends SequentialCommandGroup {
+        public ChoreoL4AutoCenterBarge(DriveSubsystem driveSubsystem, PivotSubsystem pivotSubsystem,
                         ElevatorSubsystem elevatorSubsystem, AlgaeSubsystem algaeSubsystem,
                         CoralSubsystem coralSubsystem) {
 
@@ -44,21 +47,24 @@ public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
                                                 new SwerveDriveChoreoFollow(
                                                                 driveSubsystem,
                                                                 path1, true)),
-                                new RemoveAlgaeL2andScoreL3(elevatorSubsystem, pivotSubsystem, algaeSubsystem,
-                                                coralSubsystem, false),
-                                new RunCommand(() -> coralSubsystem.eject(), coralSubsystem).withTimeout(1),
-                                new InstantCommand(coralSubsystem::stop),
-                                new ToAutoTravel(elevatorSubsystem, pivotSubsystem),
-                                new SwerveDriveChoreoFollow(
-                                                driveSubsystem,
-                                                path2, false),
+                                new ScoreCoralL4(elevatorSubsystem, pivotSubsystem, coralSubsystem, false),
+                                new Windmill(elevatorSubsystem, pivotSubsystem, Constants.Windmill.WindmillState.Home,
+                                                false),
+                                new WaitUntilCommand(() -> elevatorSubsystem.elevatorAtAlgaeReefL2(false)),
+                                new RemoveAlgaeL2noCoral(elevatorSubsystem, pivotSubsystem, algaeSubsystem,
+                                                false),
+                                new ParallelCommandGroup(new ToAutoTravel(elevatorSubsystem, pivotSubsystem),
+                                                new SwerveDriveChoreoFollow(
+                                                                driveSubsystem,
+                                                                path2, false)),
                                 new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
                                                 coralSubsystem,
                                                 true),
                                 new AutoWaitUntilElevatorBelowSafeTravelHeight(elevatorSubsystem),
-                                new SwerveDriveChoreoFollow(
+                                new ParallelCommandGroup(new SwerveDriveChoreoFollow(
                                                 driveSubsystem,
                                                 path3, false),
+                                                new ToAutoTravel(elevatorSubsystem, pivotSubsystem)),
                                 new RemoveAlgaeL3noCoral(elevatorSubsystem, pivotSubsystem, algaeSubsystem, false),
                                 new ParallelCommandGroup(new ToAutoTravel(elevatorSubsystem, pivotSubsystem),
                                                 new SwerveDriveChoreoFollow(
