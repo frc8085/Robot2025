@@ -15,7 +15,7 @@ public class RetractClimb extends Command {
 
     @Override
     public void initialize() {
-        climberSubsystem.moveDown();
+        climberSubsystem.moveDownNoStop();
     }
 
     @Override

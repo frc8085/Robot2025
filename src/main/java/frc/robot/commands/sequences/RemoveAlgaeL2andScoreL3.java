@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.commands.manipulator.algae.PickUpAlgae;
 import frc.robot.commands.manipulator.coral.EjectCoral;
 import frc.robot.commands.windmill.Windmill;
+import frc.robot.commands.windmill.WindmillSlow;
 import frc.robot.commands.states.ToAlgaeL2;
 import frc.robot.commands.states.ToCoralDropOff3;
 import frc.robot.subsystems.Algae.AlgaeSubsystem;
@@ -25,11 +26,11 @@ public class RemoveAlgaeL2andScoreL3 extends SequentialCommandGroup {
                                 new ToAlgaeL2(elevatorSubsystem, pivotSubsystem, yellow),
                                 new PickUpAlgae(algaeSubsystem),
                                 new WaitCommand(.25),
-                                new Windmill(elevatorSubsystem, pivotSubsystem,
+                                new WindmillSlow(elevatorSubsystem, pivotSubsystem,
                                                 Constants.Windmill.WindmillState.Home, yellow),
                                 new ParallelRaceGroup(new WaitUntilCommand(() -> pivotSubsystem
                                                 .pivotAtHomeAngle()), new WaitCommand(.5)),
-                                new Windmill(elevatorSubsystem, pivotSubsystem,
+                                new WindmillSlow(elevatorSubsystem, pivotSubsystem,
                                                 Constants.Windmill.WindmillState.CoralDropOff3, yellow),
                                 new PrintCommand("Remove Algae L2 Completed"),
                                 new ToCoralDropOff3(elevatorSubsystem, pivotSubsystem, yellow),

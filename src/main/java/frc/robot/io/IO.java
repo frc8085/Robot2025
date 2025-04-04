@@ -171,8 +171,8 @@ public class IO {
                                 false));
 
                 algaeReef2.and(altButtonOperator).onTrue(
-                                new RemoveAlgaeL2(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.algae,
+                                new RemoveAlgaeL2andScoreL3(robotContainer.elevator, robotContainer.pivot,
+                                                robotContainer.algae, robotContainer.coral,
                                                 false));
                 algaeReef3.and(altButtonOperator).onTrue(
                                 new RemoveAlgaeL3(robotContainer.elevator, robotContainer.pivot,

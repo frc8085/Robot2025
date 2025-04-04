@@ -41,9 +41,9 @@ public class SwerveDriveAlignBarge extends Command {
     public void initialize() {
         System.out.println("Started Align Barge");
         Pose2d currentPose = this.driveSubsystem.getPose(); // get the current pose of the robot
-        double targetX = 7.4; // Enter in the target X -- where we want the robot to end up - replace with
-                              // correct number
-        Rotation2d targetRot = Rotation2d.fromDegrees(-80); // This is the final rotation we want to be at
+        double targetX = 7.57; // Enter in the target X -- where we want the robot to end up - replace with
+                               // correct number
+        Rotation2d targetRot = Rotation2d.fromDegrees(-70); // This is the final rotation we want to be at
 
         // We want to go to specified X and current Y
         this.targetPose = new Pose2d(targetX, currentPose.getTranslation().getY(), targetRot);

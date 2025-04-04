@@ -44,6 +44,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
     }
 
+    public boolean climberAtClimb() {
+        return getCurrentMotorPosition() <= 22;
+    }
     // approximately 150 rotations from limit switch to deployed
 
     // read the current climber encoder position
@@ -70,9 +73,19 @@ public class ClimberSubsystem extends SubsystemBase {
         m_climberMotor.set(1);
     }
 
+    public void moveDownNoStop() {
+        if (climberAtHomePosition()) {
+            m_climberMotor.set(0);
+        } else {
+            m_climberMotor.set(-kSpeed);
+        }
+    }
+
     // open loop move climber up & down
     public void moveDown() {
         if (climberAtHomePosition()) {
+            m_climberMotor.set(0);
+        } else if (climberAtClimb()) {
             m_climberMotor.set(0);
         } else {
             m_climberMotor.set(-kSpeed);
