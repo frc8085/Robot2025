@@ -288,10 +288,10 @@ public class PivotSubsystem extends SubsystemBase {
             double pivotVoltage = this.m_pidController.calculate(this.getCurrentRotation().getDegrees(),
                     this.m_targetAngle.getDegrees());
 
-            if (pivotVoltage > 2) {
-                pivotVoltage = 2;
-            } else if (pivotVoltage < -2) {
-                pivotVoltage = -2;
+            if (pivotVoltage > 1.25) {
+                pivotVoltage = 1.25;
+            } else if (pivotVoltage < -1.25) {
+                pivotVoltage = -1.25;
             }
 
             double feedforward = Math.sin(this.getCurrentRotation().getRadians()) * PivotArmConstants.kPivotArmFF;

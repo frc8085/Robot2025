@@ -17,7 +17,7 @@ public final class PivotArmConstants {
     public static final double kPivotMotorSensorToMechanismRatio = 3.0;
     public static final double kPivotMotorRotorToSensorRatio = 9.0;
 
-    public static final double kPivotCancoderOffset = .370361;
+    public static final double kPivotCancoderOffset = .222412;
 
     public static final double kPivotArmP = 15; // 0.7
     public static final double kPivotArmI = 0; // 0.0
@@ -47,7 +47,7 @@ public final class PivotArmConstants {
     public static final double kPivotToleranceRotations = kPivotTolerance.getRotations();
 
     // Pivot Angles for different states
-    public static final double kPivotHome = 45;
+    public static final double kPivotHome = 25;
     public static final double kPivotClimb = 60;
     public static final double kPivotCoralPickup = 120;
     public static final double kPivotCoralDropOff1 = -100;

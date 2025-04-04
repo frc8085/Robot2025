@@ -3,6 +3,7 @@ package frc.robot.io;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -42,17 +43,17 @@ public class IO {
                 // final Trigger zeroElevator = operatorController.start();
                 final Trigger limelightLeftReefTrigger = Keymap.Layout.driverXButton;
                 final Trigger limelightRightReefTrigger = Keymap.Layout.driverBButton;
-                final Trigger limelightBargeTrigger = Keymap.Layout.driverUpButton;
+                final Trigger limelightBargeTrigger = Keymap.Layout.driverYButton;
 
                 // Driver operations
                 final Trigger ejectCoral = Keymap.Layout.driverAButton;
                 final Trigger pickUpCoral = Keymap.Layout.driverLeftTriggerButton;
-                final Trigger ejectAlgae = Keymap.Layout.driverYButton;
+                final Trigger ejectAlgae = Keymap.Layout.driverUpButton;
                 final Trigger shootAlgaeNetBlue = Keymap.Layout.driverLeftBumper;
                 final Trigger raiseClimber = Keymap.Layout.driverRightButton;
                 final Trigger lowerClimber = Keymap.Layout.driverLeftButton;
                 final Trigger goSlow = Keymap.Layout.driverRightBumper;
-                final Trigger testButton = Keymap.Layout.driverDownButton;
+                // final Trigger testButton = Keymap.Layout.driverDownButton;
 
                 // Operator Controls
                 final Trigger manualCoral = Keymap.Layout.operatorRightTriggerButton;
@@ -76,9 +77,12 @@ public class IO {
                 final Trigger pivotClockwise = Keymap.Controllers.operatorController.axisGreaterThan(4, 0.25);
                 final Trigger pivotCounterClockwise = Keymap.Controllers.operatorController.axisLessThan(4, -0.25);
 
-                testButton.onTrue(
-                                new EjectL4Coral(robotContainer.coral, robotContainer.elevator,
-                                                robotContainer.pivot));
+                // testButton.onTrue(new SwerveDriveAlignBarge(robotContainer.drivetrain))
+                // .onFalse(new ParallelCommandGroup(
+                // new ScoreAlgaeNetNoTurn(robotContainer.algae, robotContainer.elevator,
+                // robotContainer.pivot, robotContainer.coral,
+                // false),
+                // new SwerveDriveTeleop(robotContainer.drivetrain)));
                 // Initialization
                 // Zero elevator - carriage must be below stage 1 or it will zero where it is
                 // zeroElevator.onTrue(new ZeroElevator(robotContainer.elevator));

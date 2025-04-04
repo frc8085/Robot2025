@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.drivetrain.SwerveDriveChoreoFollow;
-import frc.robot.commands.scoring.ScoreAlgaeNetNoTurn;
+import frc.robot.commands.scoring.AutoScoreAlgaeNetNoTurn;
 import frc.robot.commands.sequences.RemoveAlgaeL2andScoreL3;
 import frc.robot.commands.sequences.RemoveAlgaeL3noCoral;
 import frc.robot.commands.states.ToAutoTravel;
@@ -52,7 +52,7 @@ public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
                                 new SwerveDriveChoreoFollow(
                                                 driveSubsystem,
                                                 path2, false),
-                                new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                                new AutoScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
                                                 coralSubsystem,
                                                 true),
                                 new AutoWaitUntilElevatorBelowSafeTravelHeight(elevatorSubsystem),
@@ -64,7 +64,7 @@ public class ChoreoAutoCenterBarge extends SequentialCommandGroup {
                                                 new SwerveDriveChoreoFollow(
                                                                 driveSubsystem,
                                                                 path4, false)),
-                                new ScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
+                                new AutoScoreAlgaeNetNoTurn(algaeSubsystem, elevatorSubsystem, pivotSubsystem,
                                                 coralSubsystem,
                                                 true),
                                 new SwerveDriveChoreoFollow(
