@@ -40,11 +40,6 @@ public class IO {
                 final Trigger zeroArm = Keymap.Layout.operatorStartButton;
                 final Trigger zeroHeadingButton = Keymap.Layout.driverStartButton;
 
-                // final Trigger zeroElevator = operatorController.start();
-                final Trigger limelightLeftReefTrigger = Keymap.Layout.driverXButton;
-                final Trigger limelightRightReefTrigger = Keymap.Layout.driverBButton;
-                final Trigger limelightBargeTrigger = Keymap.Layout.driverYButton;
-
                 // Driver operations
                 final Trigger pickUpCoral = Keymap.Layout.driverLeftTriggerButton;
                 final Trigger shootAlgaeNetBlue = Keymap.Layout.driverLeftBumper;
@@ -87,7 +82,10 @@ public class IO {
                 pickUpCoral.onTrue(new PickUpCoralFromSource(robotContainer.coral,
                                 robotContainer.elevator, robotContainer.pivot, false));
 
-                ejectAlgae.onTrue(new EjectAlgae(robotContainer.algae));
+                shootAlgaeNetBlue.onTrue(new SequentialCommandGroup(
+                                new ToAlgaeL3(robotContainer.elevator, robotContainer.pivot, false),
+                                new WaitCommand(1),
+                                new EjectAlgae(robotContainer.algae)));
 
                 // Set Move to Positions
                 home.onTrue(new Windmill(robotContainer.elevator, robotContainer.pivot,
