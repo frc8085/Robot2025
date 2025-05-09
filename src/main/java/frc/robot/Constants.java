@@ -114,6 +114,7 @@ public final class Constants {
     public static enum WindmillState {
 
       Home(ElevatorConstants.kElevatorHomeHeight, Rotation2d.fromDegrees(PivotArmConstants.kPivotHome)),
+      AutoHome(ElevatorConstants.kElevatorAutoHomeHeight, Rotation2d.fromDegrees(PivotArmConstants.kPivotAutoHome)),
       Climb(ElevatorConstants.kElevatorStage1Height, Rotation2d.fromDegrees(PivotArmConstants.kPivotClimb)),
       LimelightYellowTarget(ElevatorConstants.kElevatorHomeHeight, Rotation2d.fromDegrees(74)),
       AlgaeHoldHeight(ElevatorConstants.kElevatorAlgaeHoldHeight, Rotation2d.fromDegrees(PivotArmConstants.kPivotHome)),

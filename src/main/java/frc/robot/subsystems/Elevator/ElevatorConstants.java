@@ -26,6 +26,7 @@ public final class ElevatorConstants {
     // Elevator Heights for different states
     public static double ropeAdjustmentFactor = .93;
     public static double kElevatorHomeHeight = 33;
+    public static double kElevatorAutoHomeHeight = 30;
     public static double kElevatorAutoTravelHeight = 64;
     public static double kElevatorAlgaeHoldHeight = 47;
     public static double kElevatorCoralPickupHeight = 25.5;

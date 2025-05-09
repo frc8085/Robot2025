@@ -48,6 +48,7 @@ public final class PivotArmConstants {
 
     // Pivot Angles for different states
     public static final double kPivotHome = 25;
+    public static final double kPivotAutoHome = 45;
     public static final double kPivotClimb = 60;
     public static final double kPivotCoralPickup = 120;
     public static final double kPivotCoralDropOff1 = -100;

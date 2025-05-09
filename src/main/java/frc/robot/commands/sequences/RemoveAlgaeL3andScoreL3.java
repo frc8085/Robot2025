@@ -20,7 +20,7 @@ public class RemoveAlgaeL3andScoreL3 extends SequentialCommandGroup {
                         AlgaeSubsystem algaeSubsystem, CoralSubsystem coralSubsystem,
                         boolean yellow) {
                 addCommands(
-                                new PrintCommand("Remove Algae L2 Started"),
+                                new PrintCommand("Remove Algae L3 Started"),
                                 new ToAlgaeL3(elevatorSubsystem, pivotSubsystem, yellow),
                                 new PickUpAlgae(algaeSubsystem),
                                 new WaitCommand(.25),

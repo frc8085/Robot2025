@@ -27,9 +27,9 @@ public class RemoveAlgaeL2andScoreL3 extends SequentialCommandGroup {
                                 new PickUpAlgae(algaeSubsystem),
                                 new WaitCommand(.25),
                                 new WindmillSlow(elevatorSubsystem, pivotSubsystem,
-                                                Constants.Windmill.WindmillState.Home, yellow),
+                                                Constants.Windmill.WindmillState.AutoHome, yellow),
                                 new ParallelRaceGroup(new WaitUntilCommand(() -> pivotSubsystem
-                                                .pivotAtHomeAngle()), new WaitCommand(.5)),
+                                                .pivotAtAutoHomeAngle()), new WaitCommand(.5)),
                                 new WindmillSlow(elevatorSubsystem, pivotSubsystem,
                                                 Constants.Windmill.WindmillState.CoralDropOff3, yellow),
                                 new PrintCommand("Remove Algae L2 Completed"),

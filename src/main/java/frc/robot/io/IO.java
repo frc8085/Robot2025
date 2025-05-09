@@ -53,7 +53,7 @@ public class IO {
                 final Trigger raiseClimber = Keymap.Layout.driverRightButton;
                 final Trigger lowerClimber = Keymap.Layout.driverLeftButton;
                 final Trigger goSlow = Keymap.Layout.driverRightBumper;
-                // final Trigger testButton = Keymap.Layout.driverDownButton;
+                final Trigger testButton = Keymap.Layout.driverDownButton;
 
                 // Operator Controls
                 final Trigger manualCoral = Keymap.Layout.operatorRightTriggerButton;
@@ -77,12 +77,10 @@ public class IO {
                 final Trigger pivotClockwise = Keymap.Controllers.operatorController.axisGreaterThan(4, 0.25);
                 final Trigger pivotCounterClockwise = Keymap.Controllers.operatorController.axisLessThan(4, -0.25);
 
-                // testButton.onTrue(new SwerveDriveAlignBarge(robotContainer.drivetrain))
-                // .onFalse(new ParallelCommandGroup(
-                // new ScoreAlgaeNetNoTurn(robotContainer.algae, robotContainer.elevator,
-                // robotContainer.pivot, robotContainer.coral,
-                // false),
-                // new SwerveDriveTeleop(robotContainer.drivetrain)));
+                testButton.onTrue(new AutoScoreAlgaeNetNoTurn(robotContainer.algae, robotContainer.elevator,
+                                robotContainer.pivot,
+                                robotContainer.coral,
+                                true));
                 // Initialization
                 // Zero elevator - carriage must be below stage 1 or it will zero where it is
                 // zeroElevator.onTrue(new ZeroElevator(robotContainer.elevator));
@@ -153,7 +151,7 @@ public class IO {
 
                 toggleClimber.toggleOnTrue(new ConditionalCommand(
                                 new LockPivotAndElevatorCommand(robotContainer.elevator,
-                                                robotContainer.pivot).withTimeout(15)
+                                                robotContainer.pivot)
                                                 .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming),
                                 new ToHomeCommand(robotContainer.elevator, robotContainer.pivot),
                                 robotContainer.climber::climberAtHomePosition));

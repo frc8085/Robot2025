@@ -115,6 +115,13 @@ public class PivotSubsystem extends SubsystemBase {
                         - PivotArmConstants.kPivotTolerance.getDegrees())));
     }
 
+    public boolean pivotAtAutoHomeAngle() {
+        return ((getCurrentRotation().getDegrees() <= (-PivotArmConstants.kPivotAutoHome
+                + PivotArmConstants.kPivotTolerance.getDegrees())) &&
+                (getCurrentRotation().getDegrees() >= (-PivotArmConstants.kPivotAutoHome
+                        - PivotArmConstants.kPivotTolerance.getDegrees())));
+    }
+
     public boolean pivotAtCoralDropOffAngle(boolean yellow) {
         if (!yellow) {
             return ((getCurrentRotation().getDegrees() <= (PivotArmConstants.kPivotCoralDropOff
