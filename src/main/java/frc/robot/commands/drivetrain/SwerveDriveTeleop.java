@@ -2,9 +2,9 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Drive.*;
 import frc.robot.Constants.OIConstants;
 import frc.robot.io.Keymap.Controllers;
-import frc.robot.subsystems.Drive.DriveSubsystem;
 
 public class SwerveDriveTeleop extends Command {
 
@@ -22,7 +22,7 @@ public class SwerveDriveTeleop extends Command {
 
     @Override
     public void execute() {
-        double speedVal = MathUtil.applyDeadband(Math.pow(Controllers.driverController.getRightTriggerAxis(), 2), 0);
+        double speedVal = 0.5;
 
         double invert = this.driveSubsystem.invertForAlliance();
 
