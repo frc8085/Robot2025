@@ -46,9 +46,7 @@ public class IO {
                 final Trigger limelightBargeTrigger = Keymap.Layout.driverYButton;
 
                 // Driver operations
-                final Trigger ejectCoral = Keymap.Layout.driverAButton;
                 final Trigger pickUpCoral = Keymap.Layout.driverLeftTriggerButton;
-                final Trigger ejectAlgae = Keymap.Layout.driverUpButton;
                 final Trigger shootAlgaeNetBlue = Keymap.Layout.driverLeftBumper;
                 final Trigger raiseClimber = Keymap.Layout.driverRightButton;
                 final Trigger lowerClimber = Keymap.Layout.driverLeftButton;
@@ -56,51 +54,28 @@ public class IO {
                 final Trigger testButton = Keymap.Layout.driverDownButton;
 
                 // Operator Controls
-                final Trigger manualCoral = Keymap.Layout.operatorRightTriggerButton;
-                final Trigger manualAlgae = Keymap.Layout.operatorLeftTriggerButton;
-                final Trigger toggleClimber = Keymap.Layout.operatorBackButton;
-
-                // Operator Set Position Controls
+                final Trigger ejectCoral = Keymap.Layout.operatorRightTriggerButton;
+                final Trigger ejectAlgae = Keymap.Layout.operatorLeftTriggerButton;
                 final Trigger home = Keymap.Layout.operatorLeftBumper;
-                final Trigger algaeGround = Keymap.Layout.operatorDownButton;
                 final Trigger algaeReef2 = Keymap.Layout.operatorRightButton;
                 final Trigger algaeReef3 = Keymap.Layout.operatorUpButton;
-                final Trigger algaeProcessor = Keymap.Layout.operatorLeftButton;
-                final Trigger coralDropOff4 = Keymap.Layout.operatorYButton;
                 final Trigger coralDropOff3 = Keymap.Layout.operatorXButton;
                 final Trigger coralDropOff2 = Keymap.Layout.operatorBButton;
                 final Trigger coralDropOff1 = Keymap.Layout.operatorAButton;
 
-                // Set Left Joystick for manual elevator/pivot movement
-                final Trigger raiseElevator = Keymap.Controllers.operatorController.axisLessThan(1, -0.25);
-                final Trigger lowerElevator = Keymap.Controllers.operatorController.axisGreaterThan(1, 0.25);
-                final Trigger pivotClockwise = Keymap.Controllers.operatorController.axisGreaterThan(4, 0.25);
-                final Trigger pivotCounterClockwise = Keymap.Controllers.operatorController.axisLessThan(4, -0.25);
+                // Operator Set Position Controls
+                final Trigger algaeGround = Keymap.Layout.operatorDownButton;
+                final Trigger algaeProcessor = Keymap.Layout.operatorLeftButton;
+                final Trigger coralDropOff4 = Keymap.Layout.operatorYButton;
 
-                testButton.onTrue(new AutoScoreAlgaeNetNoTurn(robotContainer.algae, robotContainer.elevator,
-                                robotContainer.pivot,
-                                robotContainer.coral,
-                                true));
                 // Initialization
                 // Zero elevator - carriage must be below stage 1 or it will zero where it is
                 // zeroElevator.onTrue(new ZeroElevator(robotContainer.elevator));
                 zeroArm.onTrue(new ZeroElevator(robotContainer.elevator));
-                zeroArm.and(altButtonOperator)
-                                .onTrue(new ZeroElevator(robotContainer.elevator));
 
                 // Reset heading of robot for field relative drive
                 zeroHeadingButton.onTrue(new InstantCommand(() -> robotContainer.drivetrain.zeroHeading(),
                                 robotContainer.drivetrain));
-
-                // // Limelight Buttons
-                limelightLeftReefTrigger.onTrue(new SwerveDriveTargetReef(robotContainer.drivetrain, true)).onFalse(
-                                new SwerveDriveTeleop(robotContainer.drivetrain));
-                limelightRightReefTrigger.onTrue(
-                                new SwerveDriveTargetReef(robotContainer.drivetrain, false)).onFalse(
-                                                new SwerveDriveTeleop(robotContainer.drivetrain));
-                limelightBargeTrigger.onTrue(
-                                new SwerveDriveAlignBarge(robotContainer.drivetrain)).onFalse(
-                                                new SwerveDriveTeleop(robotContainer.drivetrain));
 
                 goSlow.onTrue(new SwerveDriveTeleopRoboRelativeSlow(robotContainer.drivetrain))
                                 .onFalse(new SwerveDriveTeleop(robotContainer.drivetrain));
@@ -108,53 +83,11 @@ public class IO {
                 // commands that go with driver operations
                 ejectCoral.onTrue(new EjectCoral(robotContainer.coral, robotContainer.elevator,
                                 robotContainer.pivot));
-                ejectCoral.and(altButtonDriver).onTrue(new DropCoral(robotContainer.coral,
-                                robotContainer.elevator, robotContainer.pivot));
 
                 pickUpCoral.onTrue(new PickUpCoralFromSource(robotContainer.coral,
                                 robotContainer.elevator, robotContainer.pivot, false));
-                pickUpCoral.and(altButtonDriver)
-                                .onTrue(new PickUpCoralFromSource(robotContainer.coral, robotContainer.elevator,
-                                                robotContainer.pivot, true));
 
                 ejectAlgae.onTrue(new EjectAlgae(robotContainer.algae));
-                shootAlgaeNetBlue.onTrue(new ScoreAlgaeNetNoTurn(robotContainer.algae,
-                                robotContainer.elevator, robotContainer.pivot, robotContainer.coral,
-                                false));
-
-                raiseClimber.onTrue(new RunCommand(() -> robotContainer.climber.moveUp(),
-                                robotContainer.climber))
-                                .onFalse(new RunCommand(() -> robotContainer.climber.stop(),
-                                                robotContainer.climber));
-                lowerClimber.onTrue(new RunCommand(() -> robotContainer.climber.moveDown(),
-                                robotContainer.climber))
-                                .onFalse(new RunCommand(() -> robotContainer.climber.stop(),
-                                                robotContainer.climber));
-
-                manualCoral.onTrue(new SequentialCommandGroup(
-                                new ToCoralSourceManual(robotContainer.elevator, robotContainer.pivot, false),
-                                new RunCommand(() -> robotContainer.coral.pickup(), robotContainer.coral)))
-                                .onFalse(new SequentialCommandGroup(
-                                                new InstantCommand(() -> robotContainer.coral.stop(),
-                                                                robotContainer.coral),
-                                                new WaitCommand(0.25),
-                                                new ToHomeCommand(robotContainer.elevator, robotContainer.pivot)));
-
-                manualAlgae.onTrue(new RunCommand(() -> robotContainer.algae.pickup(), robotContainer.algae))
-                                .onFalse(new InstantCommand(() -> robotContainer.algae.holdAlgae(),
-                                                robotContainer.algae));
-
-                toggleClimber.toggleOnTrue(new ConditionalCommand(
-                                new DeployClimb(robotContainer.climber),
-                                new RetractClimb(robotContainer.climber),
-                                robotContainer.climber::climberAtHomePosition));
-
-                toggleClimber.toggleOnTrue(new ConditionalCommand(
-                                new LockPivotAndElevatorCommand(robotContainer.elevator,
-                                                robotContainer.pivot)
-                                                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming),
-                                new ToHomeCommand(robotContainer.elevator, robotContainer.pivot),
-                                robotContainer.climber::climberAtHomePosition));
 
                 // Set Move to Positions
                 home.onTrue(new Windmill(robotContainer.elevator, robotContainer.pivot,
@@ -208,29 +141,5 @@ public class IO {
                 coralDropOff4.and(altButtonOperator)
                                 .onTrue(new ToCoralDropOff4(robotContainer.elevator, robotContainer.pivot, false));
 
-                // commands that go with manual elevator/pivot movement
-                pivotClockwise
-                                .onTrue(new InstantCommand(robotContainer.pivot::start, robotContainer.pivot))
-                                .onFalse(new InstantCommand(robotContainer.pivot::holdPivotArmManual,
-                                                robotContainer.pivot));
-                pivotCounterClockwise.onTrue(new InstantCommand(robotContainer.pivot::reverse, robotContainer.pivot))
-                                .onFalse(new InstantCommand(robotContainer.pivot::holdPivotArmManual,
-                                                robotContainer.pivot));
-                raiseElevator.whileTrue(
-                                new InstantCommand(robotContainer.elevator::moveUp, robotContainer.elevator)
-                                                .andThen(new WaitUntilCommand(
-                                                                () -> robotContainer.elevator.ElevatorRaiseLimitHit()))
-                                                .andThen(new InstantCommand(robotContainer.elevator::holdHeight,
-                                                                robotContainer.elevator)))
-                                .onFalse(new InstantCommand(robotContainer.elevator::holdHeight,
-                                                robotContainer.elevator));
-                lowerElevator.whileTrue(
-                                new InstantCommand(robotContainer.elevator::moveDown, robotContainer.elevator)
-                                                .andThen(new WaitUntilCommand(
-                                                                () -> robotContainer.elevator.ElevatorLowerLimitHit()))
-                                                .andThen(new InstantCommand(robotContainer.elevator::holdHeight,
-                                                                robotContainer.elevator)))
-                                .onFalse(new InstantCommand(robotContainer.elevator::holdHeight,
-                                                robotContainer.elevator));
         }
 }
