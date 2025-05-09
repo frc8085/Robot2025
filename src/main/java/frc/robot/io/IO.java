@@ -116,29 +116,13 @@ public class IO {
 
                 algaeProcessor.onTrue(new ToAlgaeGround(robotContainer.elevator, robotContainer.pivot));
 
-                coralDropOff1.and(altButtonOperator.negate())
-                                .onTrue(new ScoreCoralL1(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.coral, false));
-
-                coralDropOff2.and(altButtonOperator.negate())
-                                .onTrue(new ScoreCoralL2(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.coral, false));
-
-                coralDropOff3.and(altButtonOperator.negate())
-                                .onTrue(new ScoreCoralL3(robotContainer.elevator, robotContainer.pivot,
-                                                robotContainer.coral, false));
-
-                coralDropOff4.and(altButtonOperator.negate()).onTrue(new ScoreCoralL4(robotContainer.elevator,
-                                robotContainer.pivot,
-                                robotContainer.coral, false));
-
-                coralDropOff1.and(altButtonOperator)
+                coralDropOff1
                                 .onTrue(new ToCoralDropOff1(robotContainer.elevator, robotContainer.pivot, false));
-                coralDropOff2.and(altButtonOperator)
+                coralDropOff2
                                 .onTrue(new ToCoralDropOff2(robotContainer.elevator, robotContainer.pivot, false));
-                coralDropOff3.and(altButtonOperator)
+                coralDropOff3
                                 .onTrue(new ToCoralDropOff3(robotContainer.elevator, robotContainer.pivot, false));
-                coralDropOff4.and(altButtonOperator)
+                coralDropOff4
                                 .onTrue(new ToCoralDropOff4(robotContainer.elevator, robotContainer.pivot, false));
 
         }

@@ -20,16 +20,16 @@ public final class DriveConstants {
     public static final int kRearRightTurningCanId = 14;
 
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.12; // Rev stated max speed
+    public static final double kMaxSpeedMetersPerSecond = 1; // Rev stated max speed
 
     // what is the multiplier for the speed decrease
-    public static final double kMinSpeedMetersPerSecondMaxElevatorHeightMul = 0.025;
+    public static final double kMinSpeedMetersPerSecondMaxElevatorHeightMul = 0.05;
 
     public static final double kMinSpeedMetersPerSecondMaxElevatorHeight = 0.2;
     public static final double kSlowDrive = 0.1;
 
     // if you want to slow down the rotation speed, change the adjustment factor
-    public static final double kAngularSpeedAdjustment = 1;
+    public static final double kAngularSpeedAdjustment = .5;
     public static final double kMaxAngularSpeed = 2 * Math.PI * kAngularSpeedAdjustment; // radians per second
 
     // Chassis configuration
